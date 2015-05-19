@@ -18,12 +18,12 @@
 
       var that = this;
 
-      this.product = productDetail;
-      this.productVersion = versionDetail;
+      that.product = productDetail;
+      that.productVersion = versionDetail;
 
-      this.setCurrentMilestone = false;
+      that.setCurrentMilestone = false;
 
-      this.data = new PncRestClient.Milestone();
+      that.data = new PncRestClient.Milestone();
 
       $scope.validation = {
         version: {
@@ -86,8 +86,8 @@
             }, {reload:true});
           },
           function (response) {
-            $log.error('Create product failed: response: %O', response);
-            Notifications.error('Action Failed.');
+            $log.error('Milestone creation failed: response: %O', response);
+            Notifications.error('Milestone creation failed');
           }
         );
       };
