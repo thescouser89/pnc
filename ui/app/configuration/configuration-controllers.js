@@ -30,7 +30,7 @@
       var that = this;
 
       this.configurations = configurationList;
-      this.projects = [];
+      this.projects = buckets.Set();
 
       angular.forEach(this.configurations, function(configuration) {
         ProjectDAO.get({
@@ -38,7 +38,10 @@
         }).$promise.then(
           function(result) {
             if (result) {
-              that.projects.push(result);
+              alert(result.id);
+              alert(that.projects.contains(result));
+              that.projects.add(result);
+              alert(that.projects.size());
             }
           }
         );

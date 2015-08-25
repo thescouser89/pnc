@@ -47,8 +47,11 @@
           </a>
         </td>
         <td>{{ configuration.description }}</td>
+        <div>
+        {{listCtrl.projects}}
+          </div>
         <td>
-          <div ng-repeat="project in listCtrl.projects | filter: { id: configuration.projectId } | limitTo: 1">
+          <div ng-repeat="project in listCtrl.projects.toArray() | filter: { id: configuration.projectId }">
             {{ project.name }}
           </div>
         </td>
