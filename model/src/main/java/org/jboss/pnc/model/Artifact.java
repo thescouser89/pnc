@@ -49,6 +49,7 @@ public class Artifact implements GenericEntity<Integer> {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
     private Integer id;
 
+    private String test;
     /**
      * Contains a string which uniquely identifies the artifact in a repository.
      * For example, for a maven artifact this is the GATVC (groupId:artifactId:type:version[:qualifier]
