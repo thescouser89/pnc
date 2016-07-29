@@ -120,7 +120,7 @@ public class BuildTaskEndpoint {
 
         try {
 
-            logger.debug("Endpoint /execute-build requested for buildTaskId [{}], from [{}]", buildExecutionConfiguration.getId(), request.getRemoteAddr());
+            logger.error("Endpoint /execute-build requested for buildTaskId [{}], from [{}]", buildExecutionConfiguration.getId(), request.getRemoteAddr());
 
 //TODO input validation
 //            Integer buildTaskId;

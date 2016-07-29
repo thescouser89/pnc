@@ -70,18 +70,18 @@ public class AuthenticationProvider {
         // =====================================================================
         // The strings below were added by dcheung:: To remove
         // =====================================================================
-        log.debug("Method: " + req.getMethod());
+        log.error("Method: " + req.getMethod());
 
         Enumeration headerNames = req.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = (String) headerNames.nextElement();
-            log.debug("Header Name - " + headerName + ", Value - " + req.getHeader(headerName));
+            log.error("Header Name - " + headerName + ", Value - " + req.getHeader(headerName));
         }
 
         Enumeration params = req.getParameterNames();
         while (params.hasMoreElements()) {
             String paramName = (String) params.nextElement();
-            log.debug("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
+            log.error("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
         }
         // End of dcheung hack
         // =====================================================================
