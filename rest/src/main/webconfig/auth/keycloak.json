@@ -4,7 +4,7 @@
   "auth-server-url": "@url-of-your-keycloak-server@",
   "ssl-required": "none",
   "resource": "pncrest",
-  "bearer-only" : true,
+  "bearer-only" : false,
   "public-client": true,
   "credentials": {
     "secret": "fd3f348c-d8e8-4204-871b-6e3a5b6e4323"
