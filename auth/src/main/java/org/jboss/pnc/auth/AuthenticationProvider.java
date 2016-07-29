@@ -2,13 +2,13 @@
  * JBoss, Home of Professional Open Source.
  * Copyright 2014 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package org.jboss.pnc.auth;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -33,14 +34,12 @@ import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.AccessTokenResponse;
 
 
-
 /**
  * This class provides access to authenticated user info. In case no authentication
  * is configured or there are problems with authentication the default demo-user is
  * returned instead
  *
  * @author pslegr
- *
  */
 public class AuthenticationProvider {
     public final static Logger log = Logger.getLogger(AuthenticationProvider.class);
@@ -67,25 +66,43 @@ public class AuthenticationProvider {
     private AccessToken auth;
     private AccessTokenResponse atr;
 
-    public AuthenticationProvider(HttpServletRequest req){
+    public AuthenticationProvider(HttpServletRequest req) {
+        // =====================================================================
+        // The strings below were added by dcheung:: To remove
+        // =====================================================================
+        log.debug("Method: " + req.getMethod());
+
+        Enumeration headerNames = req.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = (String) headerNames.nextElement();
+            log.debug("Header Name - " + headerName + ", Value - " + req.getHeader(headerName));
+        }
+
+        Enumeration params = req.getParameterNames();
+        while (params.hasMoreElements()) {
+            String paramName = (String) params.nextElement();
+            log.debug("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
+        }
+        // End of dcheung hack
+        // =====================================================================
+
         try {
             KeycloakSecurityContext keycloakSecurityContext = (KeycloakSecurityContext) req.getAttribute(KeycloakSecurityContext.class.getName());
-            if(keycloakSecurityContext == null) {
+            if (keycloakSecurityContext == null) {
                 handleAuthenticationProblem("KeycloakSecurityContext not available in the HttpServletRequest.");
             } else {
                 this.auth = keycloakSecurityContext.getToken();
             }
-        }
-        catch (NoClassDefFoundError ncdfe) {
+        } catch (NoClassDefFoundError ncdfe) {
             handleAuthenticationProblem(ncdfe.getMessage(), ncdfe);
         }
     }
 
-    public AuthenticationProvider(SecurityContext securityContext){
+    public AuthenticationProvider(SecurityContext securityContext) {
         try {
             KeycloakPrincipal principal =
-                    (KeycloakPrincipal)securityContext.getUserPrincipal();
-            if(principal == null) {
+                    (KeycloakPrincipal) securityContext.getUserPrincipal();
+            if (principal == null) {
                 handleAuthenticationProblem("No principal found in SecurityContext");
             } else {
                 KeycloakSecurityContext keycloakSecurityContext = principal.getKeycloakSecurityContext();
@@ -100,16 +117,15 @@ public class AuthenticationProvider {
         }
     }
 
-    public AuthenticationProvider(AccessToken accessToken, AccessTokenResponse atr){
+    public AuthenticationProvider(AccessToken accessToken, AccessTokenResponse atr) {
         try {
-            if(accessToken == null || atr == null) {
+            if (accessToken == null || atr == null) {
                 handleAuthenticationProblem(accessToken == null ? "No access token" : "No access token response");
             } else {
                 this.auth = accessToken;
                 this.atr = atr;
             }
-        }
-        catch (NoClassDefFoundError ncdfe) {
+        } catch (NoClassDefFoundError ncdfe) {
             handleAuthenticationProblem(ncdfe.getMessage(), ncdfe);
         }
     }
@@ -128,28 +144,28 @@ public class AuthenticationProvider {
     }
 
     public String getEmail() {
-        if(auth == null) {
+        if (auth == null) {
             return DemoUser.email;
         }
         return auth.getEmail();
     }
 
     public String getUserName() {
-        if(auth == null) {
+        if (auth == null) {
             return DemoUser.username;
         }
         return this.auth.getPreferredUsername();
     }
 
     public String getFirstName() {
-        if(auth == null) {
+        if (auth == null) {
             return DemoUser.firstname;
         }
         return this.auth.getGivenName();
     }
 
     public String getLastName() {
-        if(auth == null) {
+        if (auth == null) {
             return DemoUser.lastname;
         }
         return this.auth.getFamilyName();
@@ -157,14 +173,14 @@ public class AuthenticationProvider {
 
 
     public Set<String> getRole() {
-        if(auth == null) {
+        if (auth == null) {
             return DemoUser.roles;
         }
         return this.auth.getRealmAccess().getRoles();
     }
 
     public boolean isUserInRole(String role) {
-        if(auth == null) {
+        if (auth == null) {
             return DemoUser.hasRole(role);
         }
         return this.auth.getRealmAccess().isUserInRole(role);
@@ -175,7 +191,7 @@ public class AuthenticationProvider {
     }
 
     public String getTokenString() {
-        if(atr != null) {
+        if (atr != null) {
             return atr.getToken();
         }
         return DemoUser.token;
@@ -195,9 +211,11 @@ public class AuthenticationProvider {
         static String lastname = "Demo Last Name";
         static String email = "demo-user@pnc.com";
         static Set<String> roles = new HashSet<>();
+
         static {
             roles.add("user");
         }
+
         public final static boolean hasRole(String role) {
             return role.contains(role);
         }
