@@ -71,8 +71,7 @@
       if ($ctrl.buildConfig) {
         $log.debug('pncBuildStart: Initiating build of: %O', $ctrl.buildConfig);
         BuildConfigurationDAO.build({
-          configurationId: $ctrl.buildConfig.id
-        }, {
+          configurationId: $ctrl.buildConfig.id,
           params: $ctrl.params
         });
 
