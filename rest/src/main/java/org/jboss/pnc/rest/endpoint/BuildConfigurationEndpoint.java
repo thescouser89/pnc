@@ -265,8 +265,13 @@ public class BuildConfigurationEndpoint extends AbstractEndpoint<BuildConfigurat
         logger.debug("Endpoint /build requested for buildConfigurationId [{}]", id);
         User currentUser = getCurrentUser();
 
+        logger.info("TempBuild: " + temporaryBuild);
+        logger.info("Timestamp Alignment: " + timestampAlignment);
         BuildOptions buildOptions = new BuildOptions(temporaryBuild, forceRebuild, buildDependencies, keepPodOnFailure, timestampAlignment);
         checkBuildOptionsValidity(buildOptions);
+
+        logger.info("BuildOptions tempbuild: " + buildOptions.isTemporaryBuild());
+        logger.info("BuildOptions tempbuildtimestamp: " + buildOptions.isTimestampAlignment());
 
         Integer runningBuildId = null;
         // if callbackUrl is provided trigger build accordingly

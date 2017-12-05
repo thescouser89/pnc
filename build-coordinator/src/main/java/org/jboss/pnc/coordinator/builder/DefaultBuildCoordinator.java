@@ -135,6 +135,9 @@ public class DefaultBuildCoordinator implements BuildCoordinator {
                         this::buildRecordIdSupplier,
                         buildQueue.getUnfinishedTasks());
 
+        log.info("BuildCoordinator tempbuild: " + buildSetTask.getBuildOptions().isTemporaryBuild());
+        log.info("BuildCoordinator alignment: " + buildSetTask.getBuildOptions().isTimestampAlignment());
+
         buildQueue.enqueueTaskSet(buildSetTask);
         List<BuildTask> readyTasks = buildSetTask.getBuildTasks().stream().filter(BuildTask::readyToBuild).collect(Collectors.toList());
         List<BuildTask> waitingTasks = new ArrayList<>(buildSetTask.getBuildTasks());
@@ -413,6 +416,8 @@ public class DefaultBuildCoordinator implements BuildCoordinator {
                             "The configuration has already been built");
                     return;
                 }
+                log.info("processBuildTask tempbuild: " + task.getBuildOptions().isTemporaryBuild());
+                log.info("processBuildTask alignment: " + task.getBuildOptions().isTimestampAlignment());
                 task.setStartTime(new Date());
                 updateBuildTaskStatus(task, BuildCoordinationStatus.BUILDING);
             }

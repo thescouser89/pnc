@@ -131,6 +131,8 @@ public class BuildTriggerer {
                 hibernateLazyInitializer.initializeBuildConfigurationBeforeTriggeringIt(configuration),
                 currentUser,
                 buildOptions);
+        log.info("BuildSetTask tempbuild: " + buildSetTask.getBuildOptions().isTemporaryBuild());
+        log.info("BuildSetTask timestamp: " + buildSetTask.getBuildOptions().isTimestampAlignment());
         return BuildConfigurationSetTriggerResult.fromBuildSetTask(buildSetTask);
     }
 
