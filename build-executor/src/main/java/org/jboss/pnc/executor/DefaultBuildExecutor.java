@@ -229,9 +229,13 @@ public class DefaultBuildExecutor implements BuildExecutor {
 
         try {
             Consumer<RunningEnvironment> onComplete = (runningEnvironment) -> {
+                log.info("Setting running environment");
                 buildExecutionSession.setRunningEnvironment(runningEnvironment);
+                log.info("Setting build env setup complete success");
                 buildExecutionSession.setStatus(BuildExecutionStatus.BUILD_ENV_SETUP_COMPLETE_SUCCESS);
+                log.info("Setting waitToCompleteFuture");
                 waitToCompleteFuture.complete(null);
+                log.info("Done Setting waitToCompleteFuture");
             };
             Consumer<Exception> onError = (e) -> {
                 buildExecutionSession.setStatus(BuildExecutionStatus.BUILD_ENV_SETUP_COMPLETE_WITH_ERROR);
@@ -247,6 +251,7 @@ public class DefaultBuildExecutor implements BuildExecutor {
     }
 
     private CompletableFuture<CompletedBuild> runTheBuild(DefaultBuildExecutionSession buildExecutionSession) {
+        log.info("Inside runTheBuild");
         CompletableFuture<CompletedBuild> waitToCompleteFuture = new CompletableFuture<>();
         if (buildExecutionSession.isCanceled()) {
             waitToCompleteFuture.complete(null);
