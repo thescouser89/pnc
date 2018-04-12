@@ -102,14 +102,14 @@ public class DefaultBuildExecutor implements BuildExecutor {
         this.environmentDriverFactory = environmentDriverFactory;
 
         int executorThreadPoolSize = 12;
-        try {
-            String executorThreadPoolSizeStr = configuration.getModuleConfig(new PncConfigProvider<>(SystemConfig.class)).getExecutorThreadPoolSize();
-            if (executorThreadPoolSizeStr != null) {
-                executorThreadPoolSize = Integer.parseInt(executorThreadPoolSizeStr);
-            }
-        } catch (ConfigurationParseException e) {
-            log.warn("Unable parse config. Using defaults.");
-        }
+//        try {
+//            String executorThreadPoolSizeStr = configuration.getModuleConfig(new PncConfigProvider<>(SystemConfig.class)).getExecutorThreadPoolSize();
+//            if (executorThreadPoolSizeStr != null) {
+//                executorThreadPoolSize = Integer.parseInt(executorThreadPoolSizeStr);
+//            }
+//        } catch (ConfigurationParseException e) {
+//            log.warn("Unable parse config. Using defaults.");
+//        }
 
         executor = Executors.newFixedThreadPool(executorThreadPoolSize, new NamedThreadFactory("default-build-executor"));
         executorTest = Executors.newSingleThreadScheduledExecutor();
@@ -117,9 +117,8 @@ public class DefaultBuildExecutor implements BuildExecutor {
         Runnable periodicTask = new Runnable() {
             public void run() {
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
-                log.error("#### Thread Report:: Active:" + threadPoolExecutor.getActiveCount() + " Pool: "
-                        + threadPoolExecutor.getPoolSize() + " MaxPool: " + threadPoolExecutor.getMaximumPoolSize()
-                        + " ####");
+                log.error(" Pool: " + threadPoolExecutor.getPoolSize() + " MaxPool: " + threadPoolExecutor.getMaximumPoolSize()
+                        + threadPoolExecutor.getActiveCount() + " ####");
             }
         };
 
