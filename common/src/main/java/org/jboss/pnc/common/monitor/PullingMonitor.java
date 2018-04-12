@@ -18,6 +18,7 @@
 
 package org.jboss.pnc.common.monitor;
 
+import org.jboss.pnc.common.util.NamedThreadFactory;
 import org.jboss.pnc.common.util.ObjectWrapper;
 import org.jboss.pnc.common.util.TimeUtils;
 import org.jboss.util.collection.ConcurrentSet;
@@ -78,7 +79,7 @@ public class PullingMonitor {
 
         runningTasks = new ConcurrentSet<>();
         startTimeOutVerifierService();
-        executorService = Executors.newScheduledThreadPool(threadSize);
+        executorService = Executors.newScheduledThreadPool(threadSize, new NamedThreadFactory("pulling-monitor"));
     }
 
     public void monitor(Runnable onMonitorComplete, Consumer<Exception> onMonitorError, Supplier<Boolean> condition) {

@@ -79,6 +79,7 @@ public class DefaultBuildExecutor implements BuildExecutor {
     private final Logger log = LoggerFactory.getLogger(DefaultBuildExecutor.class);
 
     private ExecutorService executor;
+    private ScheduledExecutorService executorTest;
 
     private RepositoryManagerFactory repositoryManagerFactory;
     private BuildDriverFactory buildDriverFactory;
@@ -111,8 +112,7 @@ public class DefaultBuildExecutor implements BuildExecutor {
         }
 
         executor = Executors.newFixedThreadPool(executorThreadPoolSize, new NamedThreadFactory("default-build-executor"));
-        ScheduledExecutorService executor =
-                Executors.newSingleThreadScheduledExecutor();
+        executorTest = Executors.newSingleThreadScheduledExecutor();
 
         Runnable periodicTask = new Runnable() {
             public void run() {
@@ -123,7 +123,7 @@ public class DefaultBuildExecutor implements BuildExecutor {
             }
         };
 
-        executor.scheduleAtFixedRate(periodicTask, 10, 2, TimeUnit.SECONDS);
+        executorTest.scheduleAtFixedRate(periodicTask, 1, 2, TimeUnit.SECONDS);
     }
 
 
