@@ -2,13 +2,13 @@
  * JBoss, Home of Professional Open Source.
  * Copyright 2014 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,6 +65,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -83,7 +86,8 @@ public class DefaultBuildExecutor implements BuildExecutor {
     private final ConcurrentMap<Integer, DefaultBuildExecutionSession> runningExecutions = new ConcurrentHashMap<>();
 
     @Deprecated
-    public DefaultBuildExecutor() {} //CDI workaround for constructor injection
+    public DefaultBuildExecutor() {
+    } //CDI workaround for constructor injection
 
     @Inject
     public DefaultBuildExecutor(
@@ -107,6 +111,19 @@ public class DefaultBuildExecutor implements BuildExecutor {
         }
 
         executor = Executors.newFixedThreadPool(executorThreadPoolSize, new NamedThreadFactory("default-build-executor"));
+        ScheduledExecutorService executor =
+                Executors.newSingleThreadScheduledExecutor();
+
+        Runnable periodicTask = new Runnable() {
+            public void run() {
+                ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
+                log.error("#### Thread Report:: Active:" + threadPoolExecutor.getActiveCount() + " Pool: "
+                        + threadPoolExecutor.getPoolSize() + " MaxPool: " + threadPoolExecutor.getMaximumPoolSize()
+                        + " ####");
+            }
+        };
+
+        executor.scheduleAtFixedRate(periodicTask, 10, 2, TimeUnit.SECONDS);
     }
 
 
@@ -410,10 +427,10 @@ public class DefaultBuildExecutor implements BuildExecutor {
      */
     private void stopRunningEnvironment(Throwable ex) {
         DestroyableEnvironment destroyableEnvironment = null;
-        if(ex instanceof BuildProcessException) {
+        if (ex instanceof BuildProcessException) {
             BuildProcessException bpEx = (BuildProcessException) ex;
             destroyableEnvironment = bpEx.getDestroyableEnvironment();
-        } else if(ex.getCause() instanceof BuildProcessException) {
+        } else if (ex.getCause() instanceof BuildProcessException) {
             BuildProcessException bpEx = (BuildProcessException) ex.getCause();
             destroyableEnvironment = bpEx.getDestroyableEnvironment();
         } else {
