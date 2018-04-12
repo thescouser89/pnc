@@ -2,13 +2,13 @@
  * JBoss, Home of Professional Open Source.
  * Copyright 2014 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,6 +30,8 @@ import javax.enterprise.context.ApplicationScoped;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -59,6 +61,7 @@ public class PullingMonitor {
     private static final int DEFAULT_EXECUTOR_THREADPOOL_SIZE = 4;
 
     private ScheduledExecutorService executorService;
+    private ScheduledExecutorService executorTest;
     private ScheduledExecutorService timeOutVerifierService;
 
     private ConcurrentSet<RunningTask> runningTasks;
@@ -70,8 +73,8 @@ public class PullingMonitor {
 
         timeout = getValueFromPropertyOrDefault(PULLING_MONITOR_TIMEOUT_KEY, DEFAULT_TIMEOUT, "timeout");
         checkInterval = getValueFromPropertyOrDefault(PULLING_MONITOR_CHECK_INTERVAL_KEY,
-                                                      DEFAULT_CHECK_INTERVAL,
-                                                      "check interval");
+                DEFAULT_CHECK_INTERVAL,
+                "check interval");
 
         int threadSize = getValueFromPropertyOrDefault(PULLING_MONITOR_THREADPOOL_KEY,
                 DEFAULT_EXECUTOR_THREADPOOL_SIZE,
@@ -80,6 +83,18 @@ public class PullingMonitor {
         runningTasks = new ConcurrentSet<>();
         startTimeOutVerifierService();
         executorService = Executors.newScheduledThreadPool(threadSize, new NamedThreadFactory("pulling-monitor"));
+        executorTest = Executors.newSingleThreadScheduledExecutor();
+
+        Runnable periodicTask = new Runnable() {
+            public void run() {
+                ThreadPoolExecutor threadPoolExecutor = (ScheduledThreadPoolExecutor) executorService;
+                log.error("#### Thread Pulling Monitor:: Active:" + threadPoolExecutor.getActiveCount() + " Pool: "
+                        + threadPoolExecutor.getPoolSize() + " MaxPool: " + threadPoolExecutor.getMaximumPoolSize()
+                        + " ####");
+            }
+        };
+
+        executorTest.scheduleAtFixedRate(periodicTask, 1, 2, TimeUnit.SECONDS);
     }
 
     public void monitor(Runnable onMonitorComplete, Consumer<Exception> onMonitorError, Supplier<Boolean> condition) {
