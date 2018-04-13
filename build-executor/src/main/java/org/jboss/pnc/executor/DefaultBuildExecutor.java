@@ -101,7 +101,7 @@ public class DefaultBuildExecutor implements BuildExecutor {
         this.buildDriverFactory = buildDriverFactory;
         this.environmentDriverFactory = environmentDriverFactory;
 
-        int executorThreadPoolSize = 20;
+        int executorThreadPoolSize = 4;
 
         executor = Executors.newFixedThreadPool(executorThreadPoolSize, new NamedThreadFactory("default-build-executor"));
         executorTest = Executors.newSingleThreadScheduledExecutor();
