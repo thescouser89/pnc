@@ -58,7 +58,7 @@ public class PullingMonitor {
     private static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.SECONDS;
 
     private static final String PULLING_MONITOR_THREADPOOL_KEY = "pulling_monitor_threadpool";
-    private static final int DEFAULT_EXECUTOR_THREADPOOL_SIZE = 12;
+    private static final int DEFAULT_EXECUTOR_THREADPOOL_SIZE = 20;
 
     private ScheduledExecutorService executorService;
     private ScheduledExecutorService executorTest;
@@ -70,6 +70,7 @@ public class PullingMonitor {
     private int checkInterval;
 
     public PullingMonitor() {
+        log.info("PullingMonitor Object created!");
 
         timeout = getValueFromPropertyOrDefault(PULLING_MONITOR_TIMEOUT_KEY, DEFAULT_TIMEOUT, "timeout");
         checkInterval = getValueFromPropertyOrDefault(PULLING_MONITOR_CHECK_INTERVAL_KEY,
@@ -83,7 +84,7 @@ public class PullingMonitor {
         runningTasks = new ConcurrentSet<>();
         startTimeOutVerifierService();
         executorService = Executors.newScheduledThreadPool(threadSize, new NamedThreadFactory("pulling-monitor"));
-        executorTest = Executors.newSingleThreadScheduledExecutor();
+        executorTest = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("pulling-monitor-thread-check"));
 
         Runnable periodicTask = new Runnable() {
             public void run() {
