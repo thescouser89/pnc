@@ -136,7 +136,9 @@ public class PullingMonitor {
                     log.info("PullingMonitor :: omComplete callback called");
                 }
             } catch (Exception e) {
+                log.error(e.getMessage());
                 runningTasks.remove(runningTask);
+                log.info("PullingMonitor :: <><> exception :: removed running task reference from list!");
                 runningTask.cancel();
                 onMonitorError.accept(e);
             }
