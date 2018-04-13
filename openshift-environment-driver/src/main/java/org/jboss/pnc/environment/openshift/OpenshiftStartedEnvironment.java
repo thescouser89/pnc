@@ -212,7 +212,11 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
             logger.info("New build environment available on internal url: {}", getInternalEndpointUrl());
 
             try {
-                Runnable onUrlAvailable = () -> onComplete.accept(runningEnvironment);
+                Runnable onUrlAvailable = () -> {
+                    logger.info("OpenshiftStartedEnvironment::monitorInitialization: calling onComplete callback");
+                    onComplete.accept(runningEnvironment);
+                    logger.info("OpenshiftStartedEnvironment::monitorInitialization: DONE calling onComplete callback");
+                }
 
                 URL url = new URL(getInternalEndpointUrl());
                 pullingMonitor.monitor(onUrlAvailable, onError, () -> isServletAvailable(url));

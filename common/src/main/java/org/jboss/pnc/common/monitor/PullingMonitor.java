@@ -58,7 +58,7 @@ public class PullingMonitor {
     private static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.SECONDS;
 
     private static final String PULLING_MONITOR_THREADPOOL_KEY = "pulling_monitor_threadpool";
-    private static final int DEFAULT_EXECUTOR_THREADPOOL_SIZE = 4;
+    private static final int DEFAULT_EXECUTOR_THREADPOOL_SIZE = 12;
 
     private ScheduledExecutorService executorService;
     private ScheduledExecutorService executorTest;
@@ -88,7 +88,7 @@ public class PullingMonitor {
         Runnable periodicTask = new Runnable() {
             public void run() {
                 ThreadPoolExecutor threadPoolExecutor = (ScheduledThreadPoolExecutor) executorService;
-                log.error("#### Thread Pulling Monitor:: Active:" + threadPoolExecutor.getActiveCount() + " Pool: "
+                log.error("#### >>>> Thread Pulling Monitor:: Pool: "
                         + threadPoolExecutor.getPoolSize() + " MaxPool: " + threadPoolExecutor.getMaximumPoolSize()
                         + " ####");
             }

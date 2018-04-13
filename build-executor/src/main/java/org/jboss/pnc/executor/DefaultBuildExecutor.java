@@ -101,15 +101,7 @@ public class DefaultBuildExecutor implements BuildExecutor {
         this.buildDriverFactory = buildDriverFactory;
         this.environmentDriverFactory = environmentDriverFactory;
 
-        int executorThreadPoolSize = 12;
-//        try {
-//            String executorThreadPoolSizeStr = configuration.getModuleConfig(new PncConfigProvider<>(SystemConfig.class)).getExecutorThreadPoolSize();
-//            if (executorThreadPoolSizeStr != null) {
-//                executorThreadPoolSize = Integer.parseInt(executorThreadPoolSizeStr);
-//            }
-//        } catch (ConfigurationParseException e) {
-//            log.warn("Unable parse config. Using defaults.");
-//        }
+        int executorThreadPoolSize = 20;
 
         executor = Executors.newFixedThreadPool(executorThreadPoolSize, new NamedThreadFactory("default-build-executor"));
         executorTest = Executors.newSingleThreadScheduledExecutor();
@@ -117,12 +109,11 @@ public class DefaultBuildExecutor implements BuildExecutor {
         Runnable periodicTask = new Runnable() {
             public void run() {
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;
-                log.error(" Pool: " + threadPoolExecutor.getPoolSize() + " MaxPool: " + threadPoolExecutor.getMaximumPoolSize()
-                        + threadPoolExecutor.getActiveCount() + " ####");
+                log.error(" Pool: " + threadPoolExecutor.getPoolSize() + " MaxPool: " + threadPoolExecutor.getMaximumPoolSize() + " ####");
             }
         };
 
-        executorTest.scheduleAtFixedRate(periodicTask, 1, 2, TimeUnit.SECONDS);
+        executorTest.scheduleAtFixedRate(periodicTask, 1, 5, TimeUnit.SECONDS);
     }
 
 
@@ -259,6 +250,7 @@ public class DefaultBuildExecutor implements BuildExecutor {
             };
             buildExecutionSession.setStatus(BuildExecutionStatus.BUILD_ENV_WAITING);
 
+            log.info("OpensfhitStartedEnvironment::monitorInitialization called");
             startedEnvironment.monitorInitialization(onComplete, onError);
         } catch (Throwable e) {
             waitToCompleteFuture.completeExceptionally(new BuildProcessException(e, startedEnvironment));
