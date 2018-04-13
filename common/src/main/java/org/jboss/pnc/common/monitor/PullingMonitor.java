@@ -137,6 +137,9 @@ public class PullingMonitor {
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
+                log.error(e.toString());
+                e.printStackTrace();
+                log.info("PullingMonitor :: <><> exception :: removing running task reference from list!");
                 runningTasks.remove(runningTask);
                 log.info("PullingMonitor :: <><> exception :: removed running task reference from list!");
                 runningTask.cancel();

@@ -252,6 +252,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
         return () -> {
             synchronized (this) {
                 initialized.add(selector);
+                logger.info("Ready: " + initialized);
                 if (createRoute) {
                     if (!initialized.containsAll(Arrays.asList(Selector.POD, Selector.SERVICE, Selector.ROUTE))) {
                         return;

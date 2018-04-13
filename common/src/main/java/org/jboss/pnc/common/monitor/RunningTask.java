@@ -41,6 +41,7 @@ class RunningTask {
 
     public void terminateIfTimedOut() {
         if (Instant.now().isAfter(deadline)) {
+            System.out.println(">>>>>>>>>>>>>>>>> timed out being called!");
             cancel();
             onTimeout.accept(this);
         }
