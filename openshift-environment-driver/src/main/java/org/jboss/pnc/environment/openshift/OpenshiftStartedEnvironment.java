@@ -216,7 +216,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                     logger.info("OpenshiftStartedEnvironment::monitorInitialization: calling onComplete callback");
                     onComplete.accept(runningEnvironment);
                     logger.info("OpenshiftStartedEnvironment::monitorInitialization: DONE calling onComplete callback");
-                }
+                };
 
                 URL url = new URL(getInternalEndpointUrl());
                 pullingMonitor.monitor(onUrlAvailable, onError, () -> isServletAvailable(url));
