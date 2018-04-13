@@ -34,6 +34,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -121,6 +122,11 @@ public class PullingMonitor {
         ObjectWrapper<RunningTask> runningTaskReference = new ObjectWrapper<>();
         Runnable monitor = () -> {
             RunningTask runningTask = runningTaskReference.get();
+
+            if (runningTask == null) {
+                return;
+            }
+
             try {
                 int waiting = timeWaiting.addAndGet(checkInterval);
 
