@@ -98,7 +98,9 @@ public class PullingMonitor {
     }
 
     public void monitor(Runnable onMonitorComplete, Consumer<Exception> onMonitorError, Supplier<Boolean> condition) {
+        log.info("PullingMonitor :: calling monitor");
         monitor(onMonitorComplete, onMonitorError, condition, checkInterval, timeout, DEFAULT_TIME_UNIT);
+        log.info("PullingMonitor :: Done calling monitor");
     }
 
     /**
@@ -122,10 +124,15 @@ public class PullingMonitor {
                 int waiting = timeWaiting.addAndGet(checkInterval);
 
                 // Check if given condition is satisfied
+                log.info("PullingMonitor :: checking if condition satisfied...");
                 if (condition.get()) {
+                    log.info("PullingMonitor :: condition satisfied!");
                     runningTasks.remove(runningTask);
+                    log.info("PullingMonitor :: removed running task reference from list!");
                     runningTask.cancel();
+                    log.info("PullingMonitor :: running task cancelled!");
                     onMonitorComplete.run();
+                    log.info("PullingMonitor :: omComplete callback called");
                 }
             } catch (Exception e) {
                 runningTasks.remove(runningTask);
