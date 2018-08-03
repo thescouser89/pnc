@@ -92,7 +92,7 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.pnc</groupId>
-      <artifactId>metrics</artifactId>
+      <artifactId>pncmetrics</artifactId>
       <scope>provided</scope>
     </dependency>
 

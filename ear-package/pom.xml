@@ -131,7 +131,7 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.pnc</groupId>
-      <artifactId>metrics</artifactId>
+      <artifactId>pncmetrics</artifactId>
     </dependency>
   </dependencies>
 
@@ -263,7 +263,7 @@
             </jarModule>
             <jarModule>
               <groupId>org.jboss.pnc</groupId>
-              <artifactId>metrics</artifactId>
+              <artifactId>pncmetrics</artifactId>
               <includeInApplicationXml>true</includeInApplicationXml>
               <bundleDir>/</bundleDir>
             </jarModule>

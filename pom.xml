@@ -92,7 +92,6 @@
     <module>pnc-mock</module> <!-- keep 'pnc' prefix as 'mock' is dy default ignored in some cases (intellij) -->
     <module>bpm</module>
     <module>process-managers</module>
-    <module>metrics</module>
   </modules>
 
   <properties>
@@ -251,11 +250,6 @@
         <version>${project.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.jboss.pnc</groupId>
-        <artifactId>metrics</artifactId>
-        <version>${project.version}</version>
-      </dependency>
 
       <dependency>
         <groupId>org.jboss.pnc</groupId>
@@ -319,6 +313,12 @@
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
+
+    <dependency>
+      <groupId>org.jboss.pnc</groupId>
+      <artifactId>pncmetrics</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
 
       <dependency>
         <groupId>org.jboss.pnc</groupId>
