@@ -29,7 +29,7 @@ import org.jboss.pnc.common.Configuration;
 import org.jboss.pnc.common.json.AbstractModuleConfig;
 import org.jboss.pnc.common.json.ConfigurationParseException;
 import org.jboss.pnc.common.json.GlobalModuleGroup;
-import org.jboss.pnc.common.json.moduleconfig.MavenRepoDriverModuleConfig;
+import org.jboss.pnc.common.json.moduleconfig.IndyRepoDriverModuleConfig;
 import org.jboss.pnc.common.json.moduleprovider.ConfigProvider;
 import org.jboss.pnc.indyrepositorymanager.RepositoryManagerDriver;
 import org.jboss.pnc.indyrepositorymanager.fixture.TestBuildExecution;
@@ -73,7 +73,7 @@ public class IndyPromotionValidationTest {
         RepositoryManager driver = null;
         try {
             driver = new RepositoryManagerDriver(new TestConfiguration(baseUrl));
-            RepositorySession repositorySession = driver.createBuildRepository(new TestBuildExecution("test"), null,
+            RepositorySession repositorySession = driver.createBuildRepository(new TestBuildExecution("test"), null, null,
                     TargetRepository.Type.MAVEN);
             CloseableHttpClient client = HttpClientBuilder.create().build();
             String deployUrl = repositorySession.getConnectionInfo().getDeployUrl();
@@ -133,7 +133,7 @@ public class IndyPromotionValidationTest {
         }
         @Override
         public <T extends AbstractModuleConfig> T getModuleConfig(ConfigProvider<T> provider) throws ConfigurationParseException {
-            MavenRepoDriverModuleConfig mvnCfg = new MavenRepoDriverModuleConfig(baseUrl);
+            IndyRepoDriverModuleConfig mvnCfg = new IndyRepoDriverModuleConfig(baseUrl);
             return (T)mvnCfg;
         }
 

@@ -36,8 +36,8 @@ import org.commonjava.indy.promote.model.ValidationResult;
 import org.commonjava.maven.atlas.ident.ref.ArtifactRef;
 import org.commonjava.maven.atlas.ident.ref.SimpleArtifactRef;
 import org.commonjava.maven.atlas.ident.util.ArtifactPathInfo;
-import org.jboss.pnc.common.json.moduleconfig.MavenRepoDriverModuleConfig.IgnoredPathSuffixes;
-import org.jboss.pnc.common.json.moduleconfig.MavenRepoDriverModuleConfig.InternalRepoPatterns;
+import org.jboss.pnc.common.json.moduleconfig.IndyRepoDriverModuleConfig.IgnoredPathSuffixes;
+import org.jboss.pnc.common.json.moduleconfig.IndyRepoDriverModuleConfig.InternalRepoPatterns;
 import org.jboss.pnc.model.Artifact;
 import org.jboss.pnc.model.TargetRepository;
 import org.jboss.pnc.spi.coordinator.CompletionStatus;
@@ -90,6 +90,7 @@ public class IndyRepositorySession implements RepositorySession {
     private boolean isTempBuild;
 
     private Indy indy;
+    private Indy serviceAccountIndy;
     private final String buildContentId;
     private final String packageKey;
     /**
@@ -103,10 +104,11 @@ public class IndyRepositorySession implements RepositorySession {
 
     private String buildPromotionGroup;
 
-    public IndyRepositorySession(Indy indy, String buildContentId, String packageKey,
+    public IndyRepositorySession(Indy indy, Indy serviceAccountIndy, String buildContentId, String packageKey,
             IndyRepositoryConnectionInfo info, InternalRepoPatterns internalRepoPatterns,
             IgnoredPathSuffixes ignoredPathSuffixes, String buildPromotionGroup, boolean isTempBuild) {
         this.indy = indy;
+        this.serviceAccountIndy = serviceAccountIndy;
         this.buildContentId = buildContentId;
         this.packageKey = packageKey;
         this.internalRepoPatterns = internalRepoPatterns;
@@ -170,7 +172,7 @@ public class IndyRepositorySession implements RepositorySession {
 
         try {
             StoreKey key = new StoreKey(packageKey, StoreType.group, buildContentId);
-            indy.stores().delete(key, "[Post-Build] Removing build aggregation group: " + buildContentId);
+            serviceAccountIndy.stores().delete(key, "[Post-Build] Removing build aggregation group: " + buildContentId);
         } catch (IndyClientException e) {
             throw new RepositoryManagerException("Failed to retrieve Indy stores module. Reason: %s", e, e.getMessage());
         }
@@ -238,7 +240,7 @@ public class IndyRepositorySession implements RepositorySession {
                             toPromote.put(storeKey, paths);
                         }
 
-                        paths.add(download.getPath());
+                        paths.add(path);
                     }
                 }
 
@@ -485,7 +487,7 @@ public class IndyRepositorySession implements RepositorySession {
     private void doPromoteByPath(PathsPromoteRequest req) throws RepositoryManagerException {
         IndyPromoteClientModule promoter;
         try {
-            promoter = indy.module(IndyPromoteClientModule.class);
+            promoter = serviceAccountIndy.module(IndyPromoteClientModule.class);
         } catch (IndyClientException e) {
             throw new RepositoryManagerException("Failed to retrieve Indy client module. Reason: %s", e, e.getMessage());
         }
@@ -521,7 +523,7 @@ public class IndyRepositorySession implements RepositorySession {
     public void promoteToBuildContentSet() throws RepositoryManagerException {
         IndyPromoteClientModule promoter;
         try {
-            promoter = indy.module(IndyPromoteClientModule.class);
+            promoter = serviceAccountIndy.module(IndyPromoteClientModule.class);
         } catch (IndyClientException e) {
             throw new RepositoryManagerException("Failed to retrieve Indy client module. Reason: %s", e, e.getMessage());
         }
@@ -532,10 +534,10 @@ public class IndyRepositorySession implements RepositorySession {
             GroupPromoteResult result = promoter.promoteToGroup(request);
             if (result.succeeded()) {
                 if (!isTempBuild) {
-                    HostedRepository hosted = indy.stores().load(hostedKey, HostedRepository.class);
+                    HostedRepository hosted = serviceAccountIndy.stores().load(hostedKey, HostedRepository.class);
                     hosted.setReadonly(true);
                     try {
-                        indy.stores().update(hosted, "Setting readonly after successful build and promotion.");
+                        serviceAccountIndy.stores().update(hosted, "Setting readonly after successful build and promotion.");
                     } catch (IndyClientException ex) {
                         try {
                             promoter.rollbackGroupPromote(request);
@@ -581,6 +583,9 @@ public class IndyRepositorySession implements RepositorySession {
                 break;
             case NPM_PKG_KEY:
                 suffixes = ignoredPathSuffixes.getNpmWithShared();
+                break;
+            case GENERIC_PKG_KEY:
+                suffixes = ignoredPathSuffixes.getShared();
                 break;
             default:
                 throw new IllegalArgumentException("Package type " + packageType

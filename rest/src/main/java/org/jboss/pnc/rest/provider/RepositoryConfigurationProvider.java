@@ -22,6 +22,7 @@ import org.jboss.pnc.common.Configuration;
 import org.jboss.pnc.common.json.ConfigurationParseException;
 import org.jboss.pnc.common.json.moduleconfig.ScmModuleConfig;
 import org.jboss.pnc.common.json.moduleprovider.PncConfigProvider;
+import org.jboss.pnc.common.util.UrlUtils;
 import org.jboss.pnc.model.RepositoryConfiguration;
 import org.jboss.pnc.rest.provider.collection.CollectionInfo;
 import org.jboss.pnc.rest.provider.collection.CollectionInfoCollector;
@@ -107,7 +108,7 @@ public class RepositoryConfigurationProvider extends AbstractProvider<Repository
         String internalScmAuthority = moduleConfig.getInternalScmAuthority();
         if (!isInternalRepository(internalScmAuthority, internalRepoUrl)) {
             logger.warn("Invalid internal repo url: " + internalRepoUrl);
-            throw new InvalidEntityException("Internal repository url has to start with: git+ssh://" + internalScmAuthority + " followed by a repository name or match the pattern: " + REPOSITORY_NAME_PATTERN);
+            throw new InvalidEntityException("Internal repository url has to start with: <protocol>://" + internalScmAuthority + " followed by a repository name or match the pattern: " + REPOSITORY_NAME_PATTERN);
         }
 
     }
@@ -116,9 +117,9 @@ public class RepositoryConfigurationProvider extends AbstractProvider<Repository
         if (StringUtils.isBlank(internalRepoUrl) || internalScmAuthority == null) {
             throw new RuntimeException("InternalScmAuthority and internalRepoUrl parameters must be set.");
         }
-        String expectedPrefix = "git+ssh://" + internalScmAuthority;
-        return internalRepoUrl.startsWith(expectedPrefix)
-                && REPOSITORY_NAME_PATTERN.matcher(internalRepoUrl.replace(expectedPrefix, "")).matches();
+        String internalRepoUrlNoProto = UrlUtils.stripProtocol(internalRepoUrl);
+        return internalRepoUrlNoProto.startsWith(internalScmAuthority)
+                && REPOSITORY_NAME_PATTERN.matcher(internalRepoUrlNoProto.replace(internalScmAuthority, "")).matches();
     }
 
     private void validateIfItsNotConflicting(RepositoryConfigurationRest repositoryConfigurationRest) throws ConflictedEntryException {

@@ -109,6 +109,13 @@ public class BuildRecordRest implements GenericRestEntity<Integer> {
     @Setter
     private String executionRootVersion;
 
+    @Getter
+    @Setter
+    private Integer[] dependentBuildRecordIds;
+
+    @Getter
+    @Setter
+    private Integer[] dependencyBuildRecordIds;
 
     public BuildRecordRest() {
     }
@@ -129,7 +136,7 @@ public class BuildRecordRest implements GenericRestEntity<Integer> {
         performIfNotNull(buildRecord.getBuildConfigurationAudited(),
                 () -> projectId = buildRecord.getBuildConfigurationAudited().getProject().getId());
         performIfNotNull(buildRecord.getBuildConfigurationAudited(),
-                () -> projectName = buildRecord.getBuildConfigurationAudited().getName());
+                () -> projectName = buildRecord.getBuildConfigurationAudited().getProject().getName());
 
         performIfNotNull(buildRecord.getUser(), () -> userId = buildRecord.getUser().getId());
         performIfNotNull(buildRecord.getUser(), () -> username = buildRecord.getUser().getUsername());
@@ -149,6 +156,9 @@ public class BuildRecordRest implements GenericRestEntity<Integer> {
 
         executionRootName = buildRecord.getExecutionRootName();
         executionRootVersion = buildRecord.getExecutionRootVersion();
+
+        dependencyBuildRecordIds = buildRecord.getDependencyBuildRecordIds();
+        dependentBuildRecordIds = buildRecord.getDependentBuildRecordIds();
     }
 
     public BuildRecordRest(

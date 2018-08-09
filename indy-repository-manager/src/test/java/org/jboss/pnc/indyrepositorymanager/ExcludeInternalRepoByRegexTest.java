@@ -24,7 +24,7 @@ import org.commonjava.indy.model.core.Group;
 import org.commonjava.indy.model.core.RemoteRepository;
 import org.commonjava.indy.model.core.StoreKey;
 import org.commonjava.indy.model.core.StoreType;
-import org.jboss.pnc.common.json.moduleconfig.MavenRepoDriverModuleConfig.InternalRepoPatterns;
+import org.jboss.pnc.common.json.moduleconfig.IndyRepoDriverModuleConfig.InternalRepoPatterns;
 import org.jboss.pnc.indyrepositorymanager.fixture.TestBuildExecution;
 import org.jboss.pnc.model.Artifact;
 import org.jboss.pnc.model.TargetRepository;
@@ -97,7 +97,7 @@ public class ExcludeInternalRepoByRegexTest
         // create a dummy non-chained build execution and repo session based on it
         BuildExecution execution = new TestBuildExecution();
 
-        RepositorySession rc = driver.createBuildRepository(execution, accessToken, TargetRepository.Type.MAVEN);
+        RepositorySession rc = driver.createBuildRepository(execution, accessToken, accessToken, TargetRepository.Type.MAVEN);
         assertThat(rc, notNullValue());
 
         String baseUrl = rc.getConnectionInfo().getDependencyUrl();

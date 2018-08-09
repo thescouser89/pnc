@@ -39,9 +39,9 @@ import org.commonjava.util.jhttpc.model.SiteConfig;
 import org.commonjava.util.jhttpc.model.SiteConfigBuilder;
 import org.jboss.pnc.common.Configuration;
 import org.jboss.pnc.common.json.ConfigurationParseException;
-import org.jboss.pnc.common.json.moduleconfig.MavenRepoDriverModuleConfig;
-import org.jboss.pnc.common.json.moduleconfig.MavenRepoDriverModuleConfig.IgnoredPathSuffixes;
-import org.jboss.pnc.common.json.moduleconfig.MavenRepoDriverModuleConfig.InternalRepoPatterns;
+import org.jboss.pnc.common.json.moduleconfig.IndyRepoDriverModuleConfig;
+import org.jboss.pnc.common.json.moduleconfig.IndyRepoDriverModuleConfig.IgnoredPathSuffixes;
+import org.jboss.pnc.common.json.moduleconfig.IndyRepoDriverModuleConfig.InternalRepoPatterns;
 import org.jboss.pnc.common.json.moduleprovider.PncConfigProvider;
 import org.jboss.pnc.model.BuildRecord;
 import org.jboss.pnc.model.TargetRepository;
@@ -57,22 +57,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 import static org.commonjava.indy.pkg.npm.model.NPMPackageTypeDescriptor.NPM_PKG_KEY;
 import static org.jboss.pnc.indyrepositorymanager.IndyRepositoryConstants.COMMON_BUILD_GROUP_CONSTITUENTS_GROUP;
 import static org.jboss.pnc.indyrepositorymanager.IndyRepositoryConstants.DRIVER_ID;
-import static org.jboss.pnc.indyrepositorymanager.IndyRepositoryConstants.PUBLIC_GROUP_ID;
-import static org.jboss.pnc.indyrepositorymanager.IndyRepositoryConstants.SHARED_IMPORTS_ID;
 import static org.jboss.pnc.indyrepositorymanager.IndyRepositoryConstants.TEMPORARY_BUILDS_GROUP;
-import static org.jboss.pnc.indyrepositorymanager.IndyRepositoryConstants.UNTESTED_BUILDS_GROUP;
 
 /**
  * Implementation of {@link RepositoryManager} that manages an <a href="https://github.com/jdcasey/indy">Indy</a> instance to
@@ -109,10 +104,10 @@ public class RepositoryManagerDriver implements RepositoryManager {
 
     @Inject
     public RepositoryManagerDriver(Configuration configuration) {
-        MavenRepoDriverModuleConfig config;
+        IndyRepoDriverModuleConfig config;
         try {
             config = configuration
-                    .getModuleConfig(new PncConfigProvider<>(MavenRepoDriverModuleConfig.class));
+                    .getModuleConfig(new PncConfigProvider<>(IndyRepoDriverModuleConfig.class));
         } catch (ConfigurationParseException e) {
             throw new IllegalStateException("Cannot read configuration for " + DRIVER_ID + ".", e);
         }
@@ -199,8 +194,9 @@ public class RepositoryManagerDriver implements RepositoryManager {
      */
     @Override
     public RepositorySession createBuildRepository(BuildExecution buildExecution, String accessToken,
-            TargetRepository.Type repositoryType) throws RepositoryManagerException {
+            String serviceAccountToken, TargetRepository.Type repositoryType) throws RepositoryManagerException {
         Indy indy = init(accessToken);
+        Indy serviceAccountIndy = init(serviceAccountToken);
 
         String pakageType = getIndyPackageTypeKey(repositoryType);
 
@@ -234,7 +230,8 @@ public class RepositoryManagerDriver implements RepositoryManager {
 
         boolean tempBuild = buildExecution.isTempBuild();
         String buildPromotionGroup = tempBuild ? TEMP_BUILD_PROMOTION_GROUP : BUILD_PROMOTION_GROUP;
-        return new IndyRepositorySession(indy, buildId, pakageType, new IndyRepositoryConnectionInfo(url, deployUrl),
+        return new IndyRepositorySession(indy, serviceAccountIndy, buildId, pakageType,
+                new IndyRepositoryConnectionInfo(url, deployUrl),
                 internalRepoPatterns, ignoredPathSuffixes, buildPromotionGroup, tempBuild);
     }
 

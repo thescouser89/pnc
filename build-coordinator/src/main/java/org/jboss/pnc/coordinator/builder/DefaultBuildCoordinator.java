@@ -20,6 +20,8 @@ package org.jboss.pnc.coordinator.builder;
 import org.jboss.pnc.common.concurrent.MDCExecutors;
 import org.jboss.pnc.common.concurrent.NamedThreadFactory;
 import org.jboss.pnc.common.json.moduleconfig.SystemConfig;
+import org.jboss.pnc.common.mdc.MDCMeta;
+import org.jboss.pnc.common.mdc.MDCUtils;
 import org.jboss.pnc.common.monitor.PullingMonitor;
 import org.jboss.pnc.coordinator.BuildCoordinationException;
 import org.jboss.pnc.coordinator.builder.datastore.DatastoreAdapter;
@@ -54,7 +56,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +65,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static org.jboss.pnc.common.util.CollectionUtils.hasCycle;
 
@@ -268,6 +269,52 @@ public class DefaultBuildCoordinator implements BuildCoordinator {
             log.warn("Cannot find task {} to cancel.", buildTaskId);
             return false;
         }
+    }
+
+    @Override
+    public Optional<MDCMeta> getMDCMeta(Integer buildTaskId) {
+        return getSubmittedBuildTasks().stream().
+                filter(buildTask -> buildTaskId.equals(buildTask.getId()))
+                .map(this::getMDCMeta)
+                .findAny();
+    }
+
+    private MDCMeta getMDCMeta(BuildTask buildTask) {
+        return new MDCMeta(
+                buildTask.getContentId(),
+                buildTask.getBuildOptions().isTemporaryBuild(),
+                systemConfig.getTemporalBuildExpireDate());
+    }
+
+    @Override
+    public boolean cancelSet(int buildSetTaskId) {
+        BuildConfigSetRecord record = datastoreAdapter.getBuildCongigSetRecordById(buildSetTaskId);
+        if (record == null) {
+            log.error("Could not find buildConfigSetRecord with id : {}", buildSetTaskId);
+            return false;
+        }
+        log.debug("Cancelling Build Configuration Set: {}",buildSetTaskId);
+        getSubmittedBuildTasks().stream()
+                .filter(t -> t != null)
+                .filter(t -> t.getBuildSetTask() != null
+                        && t.getBuildSetTask().getId().equals(buildSetTaskId))
+                .forEach(buildTask -> {
+                    try {
+                        MDCUtils.setMDC(getMDCMeta(buildTask));
+                        log.debug("Received cancel request for buildTaskId: {}.", buildTask.getId());
+                        cancel(buildTask.getId());
+                    } catch (CoreException e){
+                        log.error("Unable to cancel the build [" + buildTask.getId() + "].",e);
+                    }
+                });
+        record.setStatus(BuildStatus.CANCELLED);
+        record.setEndTime(Date.from(Instant.now()));
+        try {
+            datastoreAdapter.saveBuildConfigSetRecord(record);
+        } catch (DatastoreException e) {
+            log.error("Failed to update BuildConfigSetRecord (id: {} ) with status CANCELLED",record.getId(),e);
+        }
+        return true;
     }
 
     private void monitorCancellation(BuildTask buildTask) {
@@ -594,8 +641,14 @@ public class DefaultBuildCoordinator implements BuildCoordinator {
     private void finishDueToFailedDependency(BuildTask failedTask, BuildTask dependentTask) {
         log.debug("Finishing task {} due ta failed dependency.", dependentTask);
         buildQueue.removeTask(dependentTask);
-        updateBuildTaskStatus(dependentTask, BuildCoordinationStatus.REJECTED_FAILED_DEPENDENCIES,
-                "Dependent build " + failedTask.getBuildConfiguration().getName() + " failed.");
+        if (failedTask.getStatus() == BuildCoordinationStatus.CANCELLED) {
+            updateBuildTaskStatus(dependentTask, BuildCoordinationStatus.CANCELLED,
+                    "Dependent build " + failedTask.getBuildConfiguration().getName() + " was cancelled");
+        }
+        else {
+            updateBuildTaskStatus(dependentTask, BuildCoordinationStatus.REJECTED_FAILED_DEPENDENCIES,
+                    "Dependent build " + failedTask.getBuildConfiguration().getName() + " failed.");
+        }
         log.trace("Status of build task {} updated.", dependentTask);
         storeRejectedTask(dependentTask);
     }
@@ -629,4 +682,6 @@ public class DefaultBuildCoordinator implements BuildCoordinator {
             }
         }
     }
+
+
 }
