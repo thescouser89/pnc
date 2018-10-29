@@ -141,6 +141,7 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
                     if (newStatus == org.jboss.pnc.buildagent.api.Status.FAILED && debugData.isEnableDebugOnFailure()) {
                         debugData.setDebugEnabled(true);
                         enableSsh(Optional.ofNullable(remoteInvocation.getBuildAgentClient()));
+                        shutdownDebug(Optional.ofNullable(remoteInvocation.getBuildAgentClient()));
                     }
                     remoteInvocation.notifyCompleted(newStatus);
                 }
@@ -249,6 +250,7 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
     private void shutdownDebug(Optional<BuildAgentClient> maybeClient) {
 
         if (maybeClient.isPresent()) {
+            logger.debug("Invoking stopDebugTools.sh...");
             BuildAgentClient client = maybeClient.get();
             try {
                 client.executeCommand("/usr/local/bin/stopDebugTools.sh");
@@ -355,7 +357,8 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
         if (debugData.isEnableDebugOnFailure()) {
 
             // NCL-4189: start debug tools to use for debugging before the build
-            buildScript.append("/usr/local/bin/startDebugTools.sh");
+            logger.debug("Invoking startDebugTools.sh...");
+            buildScript.append("/usr/local/bin/startDebugTools.sh" + "\n");
 
             // This is so that we are in the correct directory when we ssh into the pod
             String projectDirectory = (workingDirectory.endsWith("/") ? workingDirectory : workingDirectory + "/") + name;
