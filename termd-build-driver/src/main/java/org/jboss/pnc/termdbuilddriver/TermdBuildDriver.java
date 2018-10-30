@@ -382,11 +382,6 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
         String name = termdRunningBuild.getName();
 
         if (debugData.isEnableDebugOnFailure()) {
-
-            // NCL-4189: start debug tools to use for debugging before the build
-            logger.debug("Invoking startDebugTools.sh...");
-            buildScript.append("/usr/local/bin/startDebugTools.sh" + "\n");
-
             // This is so that we are in the correct directory when we ssh into the pod
             String projectDirectory = (workingDirectory.endsWith("/") ? workingDirectory : workingDirectory + "/") + name;
             String enterProjectDirCommand = "echo 'cd " + projectDirectory + "' >> /home/worker/.bashrc";

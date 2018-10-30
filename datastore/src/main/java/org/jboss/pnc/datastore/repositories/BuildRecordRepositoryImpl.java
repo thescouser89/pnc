@@ -27,13 +27,15 @@ import org.jboss.pnc.model.BuildRecord;
 import org.jboss.pnc.model.IdRev;
 import org.jboss.pnc.spi.datastore.predicates.BuildRecordPredicates;
 import org.jboss.pnc.spi.datastore.repositories.BuildConfigurationAuditedRepository;
-import org.jboss.pnc.spi.datastore.repositories.GraphWithMetadata;
 import org.jboss.pnc.spi.datastore.repositories.BuildRecordRepository;
+import org.jboss.pnc.spi.datastore.repositories.GraphWithMetadata;
 import org.jboss.pnc.spi.datastore.repositories.api.PageInfo;
 import org.jboss.pnc.spi.datastore.repositories.api.Predicate;
 import org.jboss.pnc.spi.datastore.repositories.api.SortInfo;
 import org.jboss.util.graph.Graph;
 import org.jboss.util.graph.Vertex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -43,6 +45,8 @@ import java.util.List;
 
 @Stateless
 public class BuildRecordRepositoryImpl extends AbstractRepository<BuildRecord, Integer> implements BuildRecordRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(BuildRecordRepositoryImpl.class);
 
     private BuildRecordSpringRepository repository;
     private BuildConfigurationAuditedRepository buildConfigurationAuditedRepository;
@@ -119,17 +123,15 @@ public class BuildRecordRepositoryImpl extends AbstractRepository<BuildRecord, I
         GraphBuilder graphBuilder = new GraphBuilder();
 
         Graph<BuildRecord> graph = new Graph<>();
+        logger.debug("Building dependency graph for buildRecordId: {}.", buildRecordId);
         Vertex<BuildRecord> current = graphBuilder.buildDependencyGraph(graph, buildRecordId);
+        logger.trace("Dependency graph of buildRecord.id {} {}; Graph edges: {}.", buildRecordId, graph, graph.getEdges());
 
         if (current != null) {
             BuildRecord buildRecord = current.getData();
-            for (Integer dependentBuildRecordId : buildRecord.getDependentBuildRecordIds()) {
-                Vertex<BuildRecord> dependentRecord = graphBuilder.buildDependentGraph(graph, dependentBuildRecordId);
-                if (dependentRecord != null) {
-                    graph.addEdge(dependentRecord, current, 1);
-                }
-            }
+            graphBuilder.buildDependentGraph(graph, buildRecord.getId());
         }
+        logger.trace("Graph with dependents of buildRecord.id {} {}; Graph edges: {}.", buildRecordId, graph, graph.getEdges());
 
         return new GraphWithMetadata(graph, graphBuilder.getMissingBuildRecords());
     }
@@ -138,15 +140,49 @@ public class BuildRecordRepositoryImpl extends AbstractRepository<BuildRecord, I
 
         private List<Integer> missingBuildRecords = new ArrayList<>();
 
+
         Vertex<BuildRecord> buildDependencyGraph(Graph<BuildRecord> graph, Integer buildRecordId) {
             BuildRecord buildRecord = findByIdFetchProperties(buildRecordId);
             if (buildRecord != null) {
-                Vertex<BuildRecord> buildRecordVertex = new NameUniqueVertex<>(Integer.toString(buildRecord.getId()), buildRecord);
-                graph.addVertex(buildRecordVertex);
+                Vertex<BuildRecord> buildRecordVertex = getVisited(buildRecordId, graph);
+                if (buildRecordVertex == null) {
+                    buildRecordVertex = new NameUniqueVertex<>(Integer.toString(buildRecordId), buildRecord);
+                    graph.addVertex(buildRecordVertex);
+                }
                 for (Integer dependencyBuildRecordId : buildRecord.getDependencyBuildRecordIds()) {
-                    Vertex<BuildRecord> dependency = buildDependencyGraph(graph, dependencyBuildRecordId);
+                    Vertex<BuildRecord> dependency = getVisited(dependencyBuildRecordId, graph);
+                    if (dependency == null) {
+                        dependency = buildDependencyGraph(graph, dependencyBuildRecordId);
+                    }
                     if (dependency != null) {
+                        logger.trace("Creating new dependency edge from {} to {}.", buildRecordVertex, dependency);
                         graph.addEdge(buildRecordVertex, dependency, 1);
+                    }
+                }
+                return buildRecordVertex;
+            } else {
+                logger.debug("Cannot find buildRecord with id {}.", buildRecordId   );
+                missingBuildRecords.add(buildRecordId);
+                return null;
+            }
+        }
+
+        Vertex<BuildRecord> buildDependentGraph(Graph<BuildRecord> graph, Integer buildRecordId) {
+            BuildRecord buildRecord = findByIdFetchProperties(buildRecordId);
+            if (buildRecord != null) {
+                Vertex<BuildRecord> buildRecordVertex = getVisited(buildRecordId, graph);
+                if (buildRecordVertex == null) {
+                    buildRecordVertex = new NameUniqueVertex<>(Integer.toString(buildRecordId), buildRecord);
+                    graph.addVertex(buildRecordVertex);
+                }
+                for (Integer dependentBuildRecordId : buildRecord.getDependentBuildRecordIds()) {
+                    Vertex<BuildRecord> dependent = getVisited(dependentBuildRecordId, graph);
+                    if (dependent == null) {
+                        dependent = buildDependentGraph(graph, dependentBuildRecordId);
+                    }
+                    if (dependent != null) {
+                        logger.trace("Creating new dependent edge from {} to {}.", dependent, buildRecordVertex);
+                        graph.addEdge(dependent, buildRecordVertex, 1);
                     }
                 }
                 return buildRecordVertex;
@@ -156,22 +192,8 @@ public class BuildRecordRepositoryImpl extends AbstractRepository<BuildRecord, I
             }
         }
 
-        Vertex<BuildRecord> buildDependentGraph(Graph<BuildRecord> graph, Integer buildRecordId) {
-            BuildRecord buildRecord = findByIdFetchProperties(buildRecordId);
-            if (buildRecord != null) {
-                Vertex<BuildRecord> buildRecordVertex = new NameUniqueVertex<>(Integer.toString(buildRecord.getId()), buildRecord);
-                graph.addVertex(buildRecordVertex);
-                for (Integer dependentBuildRecordId : buildRecord.getDependentBuildRecordIds()) {
-                    Vertex<BuildRecord> dependent = buildDependentGraph(graph, dependentBuildRecordId);
-                    if (dependent != null) {
-                        graph.addEdge(buildRecordVertex, dependent, 1);
-                    }
-                }
-                return buildRecordVertex;
-            } else {
-                missingBuildRecords.add(buildRecordId);
-                return null;
-            }
+        private Vertex<BuildRecord> getVisited(Integer buildRecordId, Graph<BuildRecord> graph) {
+            return graph.findVertexByName(Integer.toString(buildRecordId));
         }
 
         public List<Integer> getMissingBuildRecords() {

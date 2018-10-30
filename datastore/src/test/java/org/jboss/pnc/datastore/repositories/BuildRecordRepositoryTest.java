@@ -21,24 +21,33 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.pnc.datastore.DeploymentFactory;
+import org.jboss.pnc.model.BuildConfiguration;
+import org.jboss.pnc.model.BuildConfigurationAudited;
 import org.jboss.pnc.model.BuildRecord;
 import org.jboss.pnc.model.BuildStatus;
 import org.jboss.pnc.model.User;
 import org.jboss.pnc.spi.datastore.Datastore;
 import org.jboss.pnc.spi.datastore.predicates.UserPredicates;
+import org.jboss.pnc.spi.datastore.repositories.BuildConfigurationAuditedRepository;
+import org.jboss.pnc.spi.datastore.repositories.BuildConfigurationRepository;
 import org.jboss.pnc.spi.datastore.repositories.BuildRecordRepository;
+import org.jboss.pnc.spi.datastore.repositories.GraphWithMetadata;
 import org.jboss.pnc.spi.datastore.repositories.UserRepository;
 import org.jboss.pnc.test.category.ContainerTest;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.util.graph.Vertex;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Jakub Bartecek
@@ -46,6 +55,8 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 @Category(ContainerTest.class)
 public class BuildRecordRepositoryTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(BuildRecordRepositoryTest.class);
 
     private User user = null;
 
@@ -56,7 +67,16 @@ public class BuildRecordRepositoryTest {
     private BuildRecordRepository buildRecordRepository;
 
     @Inject
+    private BuildConfigurationRepository buildConfigurationRepository;
+
+    @Inject
+    private BuildConfigurationAuditedRepository buildConfigurationAuditedRepository;
+
+    @Inject
     private Datastore datastore;
+
+    @Inject
+    Producers producers;
 
     @Deployment
     public static Archive<?> getDeployment() {
@@ -68,7 +88,7 @@ public class BuildRecordRepositoryTest {
     public void shouldFindNoneExpiredTemporaryBuilds() {
         // given
         Date now = new Date();
-        BuildRecord givenBr = initBuildRecordBuilder()
+        BuildRecord givenBr = initBuildRecordBuilder(datastore.getNextBuildRecordId())
                 .endTime(now)
                 .temporaryBuild(true)
                 .build();
@@ -85,7 +105,7 @@ public class BuildRecordRepositoryTest {
     @Test
     public void shouldFindExpiredTemporaryBuilds() {
         // given
-        BuildRecord givenBr = initBuildRecordBuilder()
+        BuildRecord givenBr = initBuildRecordBuilder(datastore.getNextBuildRecordId())
                 .endTime(new Date(0))
                 .temporaryBuild(true)
                 .build();
@@ -99,8 +119,90 @@ public class BuildRecordRepositoryTest {
         assertEquals(givenBr.getId(), found.get(0).getId());
     }
 
+    @InSequence(3)
+    @Test
+    public void dependencyGraphTest() {
+        // given
+        Date now = new Date();
+        BuildRecord buildRecord0 = initBuildRecordBuilder(100000)
+                .endTime(now)
+                .temporaryBuild(true)
+                .dependencyBuildRecordIds(new Integer[]{100002})
+                .dependentBuildRecordIds(new Integer[]{})
+                .build();
+        buildRecordRepository.save(buildRecord0);
 
-    private BuildRecord.Builder initBuildRecordBuilder() {
+        BuildRecord buildRecord1 = initBuildRecordBuilder(100001)
+                .endTime(now)
+                .temporaryBuild(true)
+                .dependencyBuildRecordIds(new Integer[]{100002})
+                .dependentBuildRecordIds(new Integer[]{})
+                .build();
+        buildRecordRepository.save(buildRecord1);
+
+        BuildRecord buildRecord2 = initBuildRecordBuilder(100002)
+                .endTime(now)
+                .temporaryBuild(true)
+                .dependencyBuildRecordIds(new Integer[]{100003,100005,110000,100006}) //missing record: 110000
+                .dependentBuildRecordIds(new Integer[]{100000,100001})
+                .build();
+        buildRecordRepository.save(buildRecord2);
+
+        BuildRecord buildRecord3 = initBuildRecordBuilder(100003)
+                .endTime(now)
+                .temporaryBuild(true)
+                .dependencyBuildRecordIds(new Integer[]{100004})
+                .dependentBuildRecordIds(new Integer[]{100002})
+                .build();
+        buildRecordRepository.save(buildRecord3);
+
+        BuildRecord buildRecord4 = initBuildRecordBuilder(100004)
+                .endTime(now)
+                .temporaryBuild(true)
+                .dependencyBuildRecordIds(new Integer[]{})
+                .dependentBuildRecordIds(new Integer[]{100003})
+                .build();
+        buildRecordRepository.save(buildRecord4);
+
+        BuildRecord buildRecord5 = initBuildRecordBuilder(100005)
+                .endTime(now)
+                .temporaryBuild(true)
+                .dependencyBuildRecordIds(new Integer[]{})
+                .dependentBuildRecordIds(new Integer[]{100002})
+                .build();
+        buildRecordRepository.save(buildRecord5);
+
+        BuildRecord buildRecord6 = initBuildRecordBuilder(100006)
+                .endTime(now)
+                .temporaryBuild(true)
+                .dependencyBuildRecordIds(new Integer[]{})
+                .dependentBuildRecordIds(new Integer[]{100002})
+                .build();
+        buildRecordRepository.save(buildRecord6);
+
+        // when
+        GraphWithMetadata<BuildRecord, Integer> dependencyGraph = buildRecordRepository.getDependencyGraph(100002);
+
+        // then
+        logger.info("Graph: {}", dependencyGraph.getGraph().toString());
+        assertEquals(7, dependencyGraph.getGraph().size());
+
+        Vertex<BuildRecord> vertex2 = dependencyGraph.getGraph().findVertexByName(100002 + "");
+        BuildRecord buildRecord = vertex2.getData();
+        assertNotNull(buildRecord.getBuildConfigurationAudited().getName());
+        assertEquals(3, vertex2.getOutgoingEdgeCount());
+        assertEquals(2, vertex2.getIncomingEdgeCount());
+
+        Vertex<BuildRecord> vertex3 = dependencyGraph.getGraph().findVertexByName(100003 + "");
+        assertEquals(1, vertex3.getOutgoingEdgeCount());
+        assertEquals(1, vertex3.getIncomingEdgeCount());
+
+        assertEquals(1, dependencyGraph.getMissingNodeIds().size());
+        assertEquals("110000", dependencyGraph.getMissingNodeIds().get(0) + "");
+    }
+
+
+    private BuildRecord.Builder initBuildRecordBuilder(Integer id) {
         if(user == null) {
             List<User> users = userRepository.queryWithPredicates(UserPredicates.withUserName("demo-user"));
             if (users.size() > 0) {
@@ -116,10 +218,14 @@ public class BuildRecordRepositoryTest {
             }
         }
 
+        BuildConfiguration buildConfiguration = producers.createValidBuildConfiguration("buildRecordTest-" + id);
+        BuildConfiguration saved = buildConfigurationRepository.save(buildConfiguration);
+        BuildConfigurationAudited buildConfigurationAudited =
+                buildConfigurationAuditedRepository.findAllByIdOrderByRevDesc(saved.getId()).get(0);
+
         return BuildRecord.Builder.newBuilder()
-                .id(datastore.getNextBuildRecordId())
-                .buildConfigurationAuditedId(1)
-                .buildConfigurationAuditedRev(1)
+                .id(id)
+                .buildConfigurationAudited(buildConfigurationAudited)
                 .submitTime(new Date())
                 .user(user)
                 .status(BuildStatus.SUCCESS);
