@@ -127,9 +127,6 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
 
             final RemoteInvocation remoteInvocation = new RemoteInvocation();
 
-            if (debugData.isEnableDebugOnFailure()) {
-                startDebug(Optional.ofNullable(remoteInvocation.getBuildAgentClient()));
-            }
 
             Consumer<TaskStatusUpdateEvent> onStatusUpdate = (event) -> {
                 final org.jboss.pnc.buildagent.api.Status newStatus;
@@ -151,15 +148,28 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
                 }
             };
 
+            // upload the script first
             CompletableFuture<String> uploadFuture = CompletableFuture.supplyAsync(uploadTask(termdRunningBuild.getRunningEnvironment(),
                     buildScript), executor);
+
+            // this returns the script path, that's where the
             CompletableFuture<Void> setClientFuture = uploadFuture.thenApplyAsync(scriptPath ->
                     createBuildAgentClient(remoteInvocation,
                             termdRunningBuild.getRunningEnvironment(),
                             scriptPath,
                             onStatusUpdate), executor);
-            CompletableFuture<Void> invokeFuture = setClientFuture
+
+            CompletableFuture<Void> intermediateFuture;
+
+            if (debugData.isEnableDebugOnFailure()) {
+                intermediateFuture = setClientFuture.thenApplyAsync(nul -> startDebug(Optional.ofNullable(remoteInvocation.getBuildAgentClient())), executor);
+            } else {
+                intermediateFuture = setClientFuture;
+            }
+
+            CompletableFuture<Void> invokeFuture = intermediateFuture
                     .thenRunAsync(() -> invokeRemoteScript(remoteInvocation), executor);
+
 
             CompletableFuture<org.jboss.pnc.buildagent.api.Status> buildCompletedFuture = invokeFuture.thenComposeAsync(nul -> remoteInvocation.getCompletionNotifier(), executor);
 
@@ -167,6 +177,7 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
             termdRunningBuild.setCancelHook(() -> {
                 uploadFuture.cancel(true);
                 setClientFuture.cancel(true);
+                intermediateFuture.cancel(true);
                 invokeFuture.cancel(false);
                 if (remoteInvocation.getBuildAgentClient() != null) {
                     remoteInvocation.cancel(runningName);
@@ -251,7 +262,7 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
      *
      * @param maybeClient
      */
-    private void startDebug(Optional<BuildAgentClient> maybeClient) {
+    private Void startDebug(Optional<BuildAgentClient> maybeClient) {
 
         if (maybeClient.isPresent()) {
             logger.debug("Invoking startDebugTools.sh...");
@@ -264,6 +275,7 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
         } else {
             logger.error("No build agent client present to start debug tools");
         }
+        return null;
     }
 
     /**
