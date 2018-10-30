@@ -127,6 +127,10 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
 
             final RemoteInvocation remoteInvocation = new RemoteInvocation();
 
+            if (debugData.isEnableDebugOnFailure()) {
+                startDebug(Optional.ofNullable(remoteInvocation.getBuildAgentClient()));
+            }
+
             Consumer<TaskStatusUpdateEvent> onStatusUpdate = (event) -> {
                 final org.jboss.pnc.buildagent.api.Status newStatus;
                 if (remoteInvocation.isCanceled() && event.getNewStatus().equals(FAILED)) {
@@ -236,6 +240,29 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
             }
         } else {
             logger.error("No build agent client present to enable ssh access");
+        }
+    }
+
+    /**
+     * Run the startDebugTools.sh script to start any debug tools that might have been running
+     * in the background before and during the build
+     *
+     * Related: NCL-4189
+     *
+     * @param maybeClient
+     */
+    private void startDebug(Optional<BuildAgentClient> maybeClient) {
+
+        if (maybeClient.isPresent()) {
+            logger.debug("Invoking startDebugTools.sh...");
+            BuildAgentClient client = maybeClient.get();
+            try {
+                client.executeCommand("/usr/local/bin/startDebugTools.sh");
+            } catch (BuildAgentClientException e) {
+                logger.error("Failed to start debug env tools", e);
+            }
+        } else {
+            logger.error("No build agent client present to start debug tools");
         }
     }
 
