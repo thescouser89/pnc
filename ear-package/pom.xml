@@ -97,6 +97,18 @@
       <type>war</type>
     </dependency>
     <dependency>
+      <groupId>org.jboss.pnc</groupId>
+      <artifactId>dto</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.pnc</groupId>
+      <artifactId>facade</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.pnc</groupId>
+      <artifactId>rest-api</artifactId>
+    </dependency>
+    <dependency>
         <groupId>org.jboss.pnc</groupId>
         <artifactId>rest-new</artifactId>
         <type>war</type>
@@ -282,6 +294,24 @@
               <bundleDir>/</bundleDir>
               <contextRoot>/pnc-rest</contextRoot>
             </webModule>
+            <jarModule>
+              <groupId>org.jboss.pnc</groupId>
+              <artifactId>dto</artifactId>
+              <includeInApplicationXml>true</includeInApplicationXml>
+              <bundleDir>/</bundleDir>
+            </jarModule>
+            <jarModule>
+              <groupId>org.jboss.pnc</groupId>
+              <artifactId>facade</artifactId>
+              <includeInApplicationXml>true</includeInApplicationXml>
+              <bundleDir>/</bundleDir>
+            </jarModule>
+            <jarModule>
+              <groupId>org.jboss.pnc</groupId>
+              <artifactId>rest-api</artifactId>
+              <includeInApplicationXml>true</includeInApplicationXml>
+              <bundleDir>/</bundleDir>
+            </jarModule>
             <webModule>
               <groupId>org.jboss.pnc</groupId>
               <artifactId>rest-new</artifactId>
