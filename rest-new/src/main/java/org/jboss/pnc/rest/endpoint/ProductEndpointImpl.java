@@ -7,16 +7,22 @@ import org.jboss.pnc.dto.response.Page;
 import org.jboss.pnc.facade.providers.ProductProvider;
 import org.jboss.pnc.rest.api.endpoints.ProductEndpoint;
 import org.jboss.pnc.rest.api.parameters.PageParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.lang.invoke.MethodHandles;
 
 public class ProductEndpointImpl implements ProductEndpoint {
+
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Inject
     private ProductProvider productProvider;
 
     @Override
     public Page<Product> getAll(PageParameters pageParameters) {
+        logger.error("Inside Product.getAll");
         return productProvider.getAll(pageParameters.getPageIndex(),
                                       pageParameters.getPageSize(),
                                       pageParameters.getSort(),

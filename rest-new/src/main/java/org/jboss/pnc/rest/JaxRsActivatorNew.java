@@ -24,17 +24,22 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Set;
 
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationPath("/rest-new")
 public class JaxRsActivatorNew extends Application {
 
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private Set<Object> singletons = new HashSet<Object>();
 
     public JaxRsActivatorNew() throws IOException {
+        logger.error("JaxRsActivatorNew called");
         configureSwagger();
         configureCors();
     }
@@ -46,6 +51,7 @@ public class JaxRsActivatorNew extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
+        logger.error("JaxRsActivatorNew::getClasses called");
         Set<Class<?>> resources = new HashSet<>();
         addSwaggerResources(resources);
         addProjectResources(resources);
@@ -69,7 +75,9 @@ public class JaxRsActivatorNew extends Application {
     }
 
     private void addEndpoints(Set<Class<?>> resources) {
+        logger.error("ProductEndpointImpl about to be added");
         resources.add(ProductEndpointImpl.class);
+        logger.error("ProductEndpointImpl added");
     }
 
     private void addExceptionMappers(Set<Class<?>> resources) {
