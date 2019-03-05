@@ -12,6 +12,10 @@ import javax.inject.Inject;
 @Stateless
 public class ProductProvider extends AbstractProvider<org.jboss.pnc.model.Product, Product, ProductRef>{
 
+    // For CDI / EJB default constructor
+    public ProductProvider() {
+    }
+
     @Inject
     public ProductProvider(ProductRepository productRepository, ProductMapper mapper, ProductRSQLMapper rsqlMapper) {
         super(productRepository, mapper, rsqlMapper);

@@ -76,6 +76,10 @@ public abstract class AbstractProvider<DB extends GenericEntity<Integer>, DTO ex
     
     protected RSQLMapper<DB> rsql;
 
+    // For CDI / EJB default constructor
+    public AbstractProvider() {
+    }
+
     public AbstractProvider(Repository<DB, Integer> repository, EntityMapper<DB, DTO, REF> mapper, RSQLMapper<DB> rsql) {
         this.repository = repository;
         this.mapper = mapper;
