@@ -70,6 +70,8 @@ public class JaxRsActivatorNew extends Application {
     }
 
     private final void configureSwagger() throws IOException {
+        OpenApiResource openApiResource = new OpenApiResource();
+        singletons.add(openApiResource);
     }
 
     private void addProjectResources(Set<Class<?>> resources) {
