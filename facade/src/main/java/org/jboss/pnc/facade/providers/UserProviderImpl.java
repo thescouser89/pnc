@@ -48,7 +48,6 @@ public class UserProviderImpl
     public UserProviderImpl(UserRepository repository,
                             UserMapper mapper) {
         super(repository, mapper, org.jboss.pnc.model.User.class);
-        this.response = response;
     }
 
     @Override
