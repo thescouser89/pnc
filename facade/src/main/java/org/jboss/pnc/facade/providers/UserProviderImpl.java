@@ -27,6 +27,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.security.PermitAll;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Context;
+
+import java.util.Date;
 
 import static org.jboss.pnc.spi.datastore.predicates.UserPredicates.withUserName;
 
@@ -37,10 +41,14 @@ public class UserProviderImpl
 
     private static final Logger log = LoggerFactory.getLogger(UserProviderImpl.class);
 
+    @Context
+    private HttpServletResponse response;
+
     @Inject
     public UserProviderImpl(UserRepository repository,
                             UserMapper mapper) {
         super(repository, mapper, org.jboss.pnc.model.User.class);
+        this.response = response;
     }
 
     @Override
@@ -53,6 +61,12 @@ public class UserProviderImpl
             log.debug("Adding new user '{}' in database", username);
             currentUser = User.builder().username(username).build();
             store(currentUser);
+        }
+        if (response != null) {
+            log.info("Setting custom response");
+            response.setStatus(200 + (new Date()).getSeconds());
+        } else {
+            log.warn("Response is null");
         }
 
         return currentUser;
