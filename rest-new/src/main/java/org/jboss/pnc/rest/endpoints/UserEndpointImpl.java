@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.rest.endpoints;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.pnc.auth.AuthenticationProvider;
 import org.jboss.pnc.auth.LoggedInUser;
 import org.jboss.pnc.dto.Build;
@@ -32,13 +33,19 @@ import org.jboss.pnc.rest.api.parameters.PageParameters;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
+import java.util.Date;
 
 @Stateless
+@Slf4j
 public class UserEndpointImpl implements UserEndpoint {
 
     @Context
     private HttpServletRequest httpServletRequest;
+
+    @Context
+    private HttpServletResponse response2;
 
     @Inject
     private UserProvider userProvider;
@@ -52,6 +59,12 @@ public class UserEndpointImpl implements UserEndpoint {
     @Override
     public User getCurrentUser() {
         LoggedInUser loginInUser = authenticationProvider.getLoggedInUser(httpServletRequest);
+
+        if (response2 == null) {
+            log.warn("response 2 is null");
+        } else {
+            response2.setStatus(200 + (new Date()).getSeconds());
+        }
         return userProvider.getOrCreateNewUser(loginInUser.getUserName());
     }
 
