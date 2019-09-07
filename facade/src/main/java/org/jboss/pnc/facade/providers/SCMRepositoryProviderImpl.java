@@ -73,7 +73,8 @@ import static org.jboss.pnc.enums.JobNotificationType.SCM_REPOSITORY_CREATION;
 @PermitAll
 @Stateless
 public class SCMRepositoryProviderImpl
-        extends AbstractProvider<RepositoryConfiguration, SCMRepository, SCMRepository> implements SCMRepositoryProvider {
+        extends AbstractIntIdProvider<RepositoryConfiguration, SCMRepository, SCMRepository>
+        implements SCMRepositoryProvider {
 
     private static final Logger log = LoggerFactory.getLogger(SCMRepositoryProviderImpl.class);
 
@@ -198,7 +199,7 @@ public class SCMRepositoryProviderImpl
             RepositoryConfiguration repositoryConfiguration = repositoryConfigurationRepository.queryByInternalScm(internalUrl);
             if (repositoryConfiguration != null) {
                 String message = "SCM Repository already exists (id: " + repositoryConfiguration.getId() + ")";
-                throw new ConflictedEntryException(message, RepositoryConfiguration.class, repositoryConfiguration.getId());
+                throw new ConflictedEntryException(message, RepositoryConfiguration.class, repositoryConfiguration.getId().toString());
             }
         }
     }
@@ -208,7 +209,7 @@ public class SCMRepositoryProviderImpl
             RepositoryConfiguration repositoryConfiguration = repositoryConfigurationRepository.queryByExternalScm(externalUrl);
             if (repositoryConfiguration != null) {
                 String message = "SCM Repository already exists (id: " + repositoryConfiguration.getId() + ")";
-                throw new ConflictedEntryException(message, RepositoryConfiguration.class, repositoryConfiguration.getId());
+                throw new ConflictedEntryException(message, RepositoryConfiguration.class, repositoryConfiguration.getId().toString());
             }
         }
     }
