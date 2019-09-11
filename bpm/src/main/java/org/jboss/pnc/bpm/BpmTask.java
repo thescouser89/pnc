@@ -23,7 +23,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.jboss.pnc.bpm.model.BpmEvent;
 import org.jboss.pnc.common.json.moduleconfig.BpmModuleConfig;
-import org.jboss.pnc.common.logging.MDCUtils;
 import org.jboss.pnc.spi.exception.CoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,9 +74,9 @@ public abstract class BpmTask implements Comparable<BpmTask> {
     /**
      * Users OAuth token used to authenticate requests on remote services
      */
-    private final String accessToken;
+    private String accessToken;
 
-    public BpmTask(String accessToken) {
+    public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
@@ -172,9 +171,6 @@ public abstract class BpmTask implements Comparable<BpmTask> {
         //global not process related parameters
         actualParameters.put("taskId", taskId);
         actualParameters.put("usersAuthToken", accessToken);
-        actualParameters.put("userId", MDCUtils.getUserId());
-        actualParameters.put("logRequestContext", MDCUtils.getRequestContext());
-        actualParameters.put("logProcessContext", MDCUtils.getProcessContext());
 
         return actualParameters;
     }

@@ -54,6 +54,7 @@ public class JaxRsActivatorNew extends Application {
     private Set<Object> singletons = new HashSet<Object>();
 
     public JaxRsActivatorNew() throws IOException {
+        singletons.add(new RequestLoggingFilter());
         configureSwagger();
         configureCors();
     }

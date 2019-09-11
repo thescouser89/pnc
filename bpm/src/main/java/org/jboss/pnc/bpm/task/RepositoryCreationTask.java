@@ -43,7 +43,7 @@ public class RepositoryCreationTask extends BpmTask {
     private final RepositoryCreationProcess repositoryCreationProcessRest;
 
     public RepositoryCreationTask(RepositoryCreationProcess repositoryCreationProcessRest, String accessToken) {
-        super(accessToken);
+        setAccessToken(accessToken);
         this.repositoryCreationProcessRest = repositoryCreationProcessRest;
     }
 

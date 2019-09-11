@@ -49,13 +49,16 @@ public class BuildConfigurationRepositoryImpl extends AbstractRepository<BuildCo
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public BuildConfiguration save(BuildConfiguration buildConfiguration) {
         Integer id = buildConfiguration.getId();
-        BuildConfiguration persisted = queryById(id);
-        if (persisted != null) {
+
+        if (id != null && id > 0) {
+            BuildConfiguration persisted = queryById(id);
+
             if (!areParametersEqual(persisted, buildConfiguration)) {
                 //always increment the revision of main entity when the child collection is updated
                 buildConfiguration.setLastModificationTime(new Date());
             }
         }
+
         return springRepository.save(buildConfiguration);
     }
 

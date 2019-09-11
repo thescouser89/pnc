@@ -27,7 +27,6 @@ import org.jboss.pnc.common.json.moduleconfig.ScmModuleConfig;
 import org.jboss.pnc.datastore.limits.DefaultPageInfoProducer;
 import org.jboss.pnc.datastore.limits.DefaultSortInfoProducer;
 import org.jboss.pnc.datastore.predicates.SpringDataRSQLPredicateProducer;
-import org.jboss.pnc.mock.repository.SequenceHandlerRepositoryMock;
 import org.jboss.pnc.model.BuildConfiguration;
 import org.jboss.pnc.model.RepositoryConfiguration;
 import org.jboss.pnc.rest.provider.RepositoryConfigurationProvider;
@@ -138,7 +137,6 @@ public class BpmEndpointTest {
                 repositoryConfigurationRepository,
                 repositoryConfigurationProvider,
                 buildConfigurationRepository,
-                new SequenceHandlerRepositoryMock(),
                 pncConfiguration);
 
     }

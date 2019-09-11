@@ -17,8 +17,6 @@
  */
 package org.jboss.pnc.datastore.repositories;
 
-import org.jboss.pnc.enums.SystemImageType;
-import org.jboss.pnc.mock.repository.SequenceHandlerRepositoryMock;
 import org.jboss.pnc.model.BuildConfiguration;
 import org.jboss.pnc.model.BuildEnvironment;
 import org.jboss.pnc.model.Project;
@@ -26,15 +24,13 @@ import org.jboss.pnc.model.RepositoryConfiguration;
 import org.jboss.pnc.spi.datastore.repositories.BuildEnvironmentRepository;
 import org.jboss.pnc.spi.datastore.repositories.ProjectRepository;
 import org.jboss.pnc.spi.datastore.repositories.RepositoryConfigurationRepository;
-import org.jboss.pnc.spi.datastore.repositories.SequenceHandlerRepository;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import java.util.Date;
-
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import org.jboss.pnc.enums.SystemImageType;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -50,8 +46,6 @@ public class Producers {
 
     @Inject
     private ProjectRepository projectRepository;
-
-    SequenceHandlerRepository sequenceHandlerRepository = new SequenceHandlerRepositoryMock();
 
     RepositoryConfiguration repositoryConfiguration() {
         RepositoryConfiguration repositoryConfiguration = RepositoryConfiguration.Builder
@@ -75,8 +69,6 @@ public class Producers {
 
     BuildConfiguration createValidBuildConfiguration(String name) {
         return BuildConfiguration.Builder.newBuilder()
-                .id(sequenceHandlerRepository.getNextID(BuildConfiguration.SEQUENCE_NAME).intValue())
-                .creationTime(new Date())
                 .buildEnvironment(buildEnv())
                 .project(project())
                 .name(name)
