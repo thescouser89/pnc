@@ -42,6 +42,7 @@ import org.commonjava.indy.promote.model.PathsPromoteRequest;
 import org.commonjava.indy.promote.model.PathsPromoteResult;
 import org.commonjava.indy.promote.model.PromoteRequest;
 import org.commonjava.indy.promote.model.ValidationResult;
+import org.jboss.pnc.common.mdc.MDCUtils;
 import org.jboss.pnc.model.Artifact;
 import org.jboss.pnc.model.TargetRepository;
 import org.jboss.pnc.spi.BuildExecutionStatus;
@@ -53,6 +54,7 @@ import org.jboss.pnc.spi.repositorymanager.model.RepositoryConnectionInfo;
 import org.jboss.pnc.spi.repositorymanager.model.RepositorySession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -222,6 +224,8 @@ public class MavenRepositorySession implements RepositorySession {
             uploads = Collections.emptyList();
         }
 
+        MDC.put("build_phase.key", "Promotion to Build Content Set");
+        MDC.put("build_phase.duration", String.valueOf(stopWatch.getTime(TimeUnit.SECONDS)));
         logger.info("END: promotion to build content set, took: {} seconds", stopWatch.getTime(TimeUnit.SECONDS));
 
         return new MavenRepositoryManagerResult(uploads, downloads, buildContentId, log, status);
@@ -239,6 +243,8 @@ public class MavenRepositorySession implements RepositorySession {
             logger.info("END: Removing build aggregation group: {}, took: {} seconds", buildContentId, stopWatch.getTime(TimeUnit.SECONDS));
             throw new RepositoryManagerException("Failed to retrieve Indy stores module. Reason: %s", e, e.getMessage());
         }
+        MDC.put("build_phase.key", "Removing build aggregation group");
+        MDC.put("build_phase.duration", String.valueOf(stopWatch.getTime(TimeUnit.SECONDS)));
         logger.info("END: Removing build aggregation group: {}, took: {} seconds", buildContentId, stopWatch.getTime(TimeUnit.SECONDS));
     }
 
@@ -544,9 +550,13 @@ public class MavenRepositorySession implements RepositorySession {
                 Artifact artifact = validateArtifact(artifactBuilder.build());
                 builds.add(artifact);
             }
+            MDC.put("build_phase.key", "Process artifacts uploaded from build");
+            MDC.put("build_phase.duration", String.valueOf(stopWatch.getTime(TimeUnit.SECONDS)));
             logger.info("END: Process artifacts uploaded from build, took {} seconds", stopWatch.getTime(TimeUnit.SECONDS));
             return builds;
         }
+        MDC.put("build_phase.key", "Process artifacts uploaded from build");
+        MDC.put("build_phase.duration", String.valueOf(stopWatch.getTime(TimeUnit.SECONDS)));
         logger.info("END: Process artifacts uploaded from build, took {} seconds", stopWatch.getTime(TimeUnit.SECONDS));
         return Collections.emptyList();
     }
