@@ -182,7 +182,7 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
                         return remoteInvocationCompletion;
                     });
 
-            CompletableFuture<Object> buildFuture = CompletableFuture.anyOf(buildLivenessFuture, optionallyEnableDebug);
+            CompletableFuture<Object> buildFuture = CompletableFuture.anyOf(optionallyEnableDebug);
 
             buildFuture.handle((result, exception) -> {
                 RemoteInvocationCompletion completion;
