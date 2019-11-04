@@ -200,6 +200,9 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
                     completion = new RemoteInvocationCompletion(new BuildDriverException("System error.", exception));
                 }
 
+                logger.info("result is: {}", result);
+                logger.info("exception is: {}", exception);
+
                 termdRunningBuild.setCancelHook(null);
                 remoteInvocation.close();
 
