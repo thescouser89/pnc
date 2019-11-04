@@ -106,7 +106,9 @@ class RemoteInvocation implements Closeable {
 
     public void enableSsh() {
         try {
+            logger.info("Starting invoking ssh");
             buildAgentClient.execute("/usr/local/bin/startSshd.sh");
+            logger.info("Done invoking ssh");
         } catch (BuildAgentClientException e) {
             logger.error("Failed to enable ssh access", e);
         }

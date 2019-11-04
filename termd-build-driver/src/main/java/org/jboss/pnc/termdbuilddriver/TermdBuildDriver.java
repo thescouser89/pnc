@@ -172,6 +172,8 @@ public class TermdBuildDriver implements BuildDriver { //TODO rename class
                         Status status = remoteInvocationCompletion.getStatus();
                         if (status.isFinal()) {
                             logger.debug("Script completionNotifier completed with status {}.", status);
+                            logger.debug("Status: {}", status);
+                            logger.debug("is enable debug: {}" , debugData.isEnableDebugOnFailure());
                             if (status == FAILED && debugData.isEnableDebugOnFailure()) {
                                 debugData.setDebugEnabled(true);
                                 remoteInvocation.enableSsh();
