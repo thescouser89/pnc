@@ -59,6 +59,7 @@ import org.jboss.pnc.spi.executor.exceptions.ExecutorException;
 import org.jboss.pnc.spi.repour.RepourResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -317,13 +318,17 @@ public class DefaultBuildCoordinator implements BuildCoordinator {
             updateBuildTaskStatus(buildTask, BuildCoordinationStatus.ENQUEUED);
             buildQueue.addReadyTask(buildTask);
             ProcessStageUtils.logProcessStageBegin(BuildCoordinationStatus.ENQUEUED.toString());
+            log.info(buildTask.toString());
+            log.info(MDC.get("processContext"));
         } else {
             updateBuildTaskStatus(buildTask, BuildCoordinationStatus.WAITING_FOR_DEPENDENCIES);
             Runnable onTaskReady = () -> {
 
+                log.info(buildTask.toString());
                 // we need to add this because we need to re-put those metadata in the thread context since the
                 // current thread context probably belongs to another build
                 MDCUtils.addContext(getMDCMeta(buildTask));
+                log.info(MDC.get("processContext"));
 
                 ProcessStageUtils.logProcessStageEnd(BuildCoordinationStatus.WAITING_FOR_DEPENDENCIES.toString());
                 updateBuildTaskStatus(buildTask, BuildCoordinationStatus.ENQUEUED);
