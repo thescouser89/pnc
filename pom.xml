@@ -1251,7 +1251,7 @@
         <plugin>
           <groupId>org.codehaus.gmavenplus</groupId>
           <artifactId>gmavenplus-plugin</artifactId>
-          <version>1.2</version>
+          <version>1.9.0</version>
           <executions>
             <execution>
               <id>calculate-jboss-port-offset</id>
