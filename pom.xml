@@ -118,7 +118,7 @@
     <version.org.json>20141113</version.org.json>
     <version.jclouds>1.8.1</version.jclouds>
     <version.jbpm>6.2.0.Final</version.jbpm>
-    <version.kie-services-client>6.2.0.Final</version.kie-services-client>
+    <version.kie-services-client>6.5.0.Final</version.kie-services-client>
     <version.keycloak>4.5.0.Final</version.keycloak>
     <version.undertow>2.0.30.Final</version.undertow>
     <version.shrinkwrap.descriptors>2.0.0-alpha-9</version.shrinkwrap.descriptors>
