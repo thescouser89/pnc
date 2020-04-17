@@ -1370,7 +1370,7 @@
               <exclude>**/plugins.txt</exclude>
               <exclude>**/Dockerfile</exclude>
               <exclude>**/nbactions.xml</exclude>
-
+              <exclude>**/.github/workflows/maven.yaml</exclude>
               <!-- Exclude downloaded/generated -->
               <exclude>**/.cache/**</exclude>
               <exclude>**/rest-config.json</exclude>
