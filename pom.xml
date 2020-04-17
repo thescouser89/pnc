@@ -1307,7 +1307,7 @@
               <exclude>**/Dockerfile</exclude>
               <exclude>**/apidocs/**</exclude>
               <exclude>**/nbactions.xml</exclude>
-
+              <exclude>**/.github/workflows/maven.yaml</exclude>
               <!-- Exclude downloaded/generated -->
               <exclude>**/.tmp/**</exclude>
               <exclude>**/.build-tmp/**</exclude>
