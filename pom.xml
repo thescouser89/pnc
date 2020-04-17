@@ -1357,7 +1357,7 @@
               <exclude>**/plugins.txt</exclude>
               <exclude>**/Dockerfile</exclude>
               <exclude>**/nbactions.xml</exclude>
-
+              <exclude>**/.github/workflows/maven.yaml</exclude>
               <!-- Exclude downloaded/generated -->
               <exclude>**/.tmp/**</exclude>
               <exclude>**/.cache/**</exclude>
