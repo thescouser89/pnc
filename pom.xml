@@ -134,7 +134,7 @@
     <version.mapstruct>1.3.0.Final</version.mapstruct>
     <version.junit>4.12</version.junit>
     <version.org.glassfish.javax.el-impl>3.0.1.b08-redhat-1</version.org.glassfish.javax.el-impl>
-    <version.vertx.core>3.8.5</version.vertx.core>
+    <version.vertx.core>3.9.0</version.vertx.core>
 
     <datetime>${timestamp}</datetime>
     <pushChanges>true</pushChanges>
