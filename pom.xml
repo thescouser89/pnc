@@ -1291,6 +1291,7 @@
               <exclude>**/plugins.txt</exclude>
               <exclude>**/Dockerfile</exclude>
               <exclude>**/apidocs/**</exclude>
+              <exclude>**/.github/workflows/maven.yaml</exclude>
 
               <!-- Exclude downloaded/generated -->
               <exclude>**/.tmp/**</exclude>
