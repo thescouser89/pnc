@@ -123,7 +123,7 @@
     <version.shrinkwrap.descriptors>2.0.0</version.shrinkwrap.descriptors>
     <version.swagger2>2.1.2</version.swagger2>
     <version.buildagent>0.6.1</version.buildagent>
-    <version.jackson.core>2.10.3</version.jackson.core>
+    <version.jackson.core>2.11.0</version.jackson.core>
     <version.lombok>1.18.12</version.lombok>
     <!-- needed because of a CVE in databind -->
     <version.jackson.databind>2.10.1</version.jackson.databind>
