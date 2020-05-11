@@ -116,7 +116,7 @@
     <version.org.apache.httpcomponents.httpclient>4.5.2</version.org.apache.httpcomponents.httpclient>
     <version.org.apache.httpcomponents.httpcore>4.4.4</version.org.apache.httpcomponents.httpcore>
     <version.org.json>20190722</version.org.json>
-    <version.jbpm>6.2.0.Final</version.jbpm>
+    <version.jbpm>7.37.0.Final</version.jbpm>
     <version.kie-services-client>6.2.0.Final</version.kie-services-client>
     <version.keycloak>4.5.0.Final</version.keycloak>
     <version.undertow>2.0.30.Final</version.undertow>
