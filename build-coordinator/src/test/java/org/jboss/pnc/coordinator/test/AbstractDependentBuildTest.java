@@ -323,7 +323,7 @@ public abstract class AbstractDependentBuildTest {
             return "Tired waiting for BuildQueue to be empty. There are still tasks in the queue:\n"
                     + buildQueue.getDebugInfo();
         };
-        Wait.forCondition(() -> buildQueue.isEmpty(), 10, ChronoUnit.SECONDS, errorMessage);
+        Wait.forCondition(() -> buildQueue.isEmpty(), 60, ChronoUnit.SECONDS, errorMessage);
     }
 
     private class MockBuildSchedulerFactory extends BuildSchedulerFactory {
