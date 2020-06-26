@@ -118,6 +118,7 @@ public class BuildRecordPredicates {
                 temporaryCount.select(cb.count(subRoot.get(BuildRecord_.id)));
                 temporaryCount.where(
                         cb.and(cb.isTrue(subRoot.get(BuildRecord_.temporaryBuild)),
+                                cb.equal(subRoot.get(BuildRecord_.STATUS), BuildStatus.SUCCESS),
                                 cb.equal(subRoot.get(BuildRecord_.buildConfigurationId), idRev.getId()),
                                 cb.equal(subRoot.get(BuildRecord_.buildConfigurationRev), idRev.getRev())
                                 ));
