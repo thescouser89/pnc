@@ -108,7 +108,7 @@
     <atlasVersion>1.1.0</atlasVersion>
     <indyVersion>2.2.0</indyVersion>
     <version.assertj-core>3.16.1</version.assertj-core>
-    <version.mockito>3.3.3</version.mockito>
+    <version.mockito>3.5.5</version.mockito>
     <version.catch-exception>1.2.0</version.catch-exception>
     <version.jbpm>6.2.0.Final</version.jbpm>
     <version.kie-services-client>6.5.0.Final</version.kie-services-client>
