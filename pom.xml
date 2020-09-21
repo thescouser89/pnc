@@ -896,7 +896,7 @@
       <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy</artifactId>
-        <version>1.10.12</version> <!-- force version provided by mockito to override hibernate version -->
+        <version>1.10.15</version> <!-- force version provided by mockito to override hibernate version -->
       </dependency>
       <dependency>
         <groupId>com.googlecode.catch-exception</groupId>
