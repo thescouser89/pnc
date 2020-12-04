@@ -561,7 +561,8 @@ public class DefaultBuildExecutor implements BuildExecutor {
 
         try {
             if (destroyableEnvironment != null) {
-                destroyableEnvironment.destroyEnvironment();
+                log.error("I should right now be destroying the build environment due to error: {}", destroyableEnvironment.toString());
+                // destroyableEnvironment.destroyEnvironment();
             }
         } catch (Throwable envE) {
             log.warn("Running environment" + destroyableEnvironment + " couldn't be destroyed!", envE);
