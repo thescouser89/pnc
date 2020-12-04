@@ -607,6 +607,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
     }
 
     private boolean isServletAvailable(URL servletUrl) {
+        logger.warn("URL URL URL URL: {}", servletUrl);
         try {
             return connectToPingUrl(servletUrl);
         } catch (IOException e) {
@@ -794,12 +795,16 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
         connection.setRequestMethod("GET");
         connection.setDoOutput(true);
         connection.setDoInput(true);
+        logger.warn("connectToPingUrl:::::connect");
         connection.connect();
+        logger.warn("connectToPingUrl:::::post-connect");
 
         int responseCode = connection.getResponseCode();
+        logger.warn("connectToPingUrl:::::disconnect");
         connection.disconnect();
+        logger.warn("connectToPingUrl:::::post-disconnect");
 
-        logger.debug("Got {} from {}.", responseCode, url);
+        logger.warn("Got {} from {}.", responseCode, url);
         return responseCode == 200;
     }
 
