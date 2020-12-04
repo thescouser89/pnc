@@ -615,7 +615,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
             boolean result = connectToPingUrl(url);
             logger.warn("Result: {}", result);
             return result;
-        } catch (IOException e) {
+        } catch (IOException|IllegalArgumentException e) {
             return false;
         }
     }
