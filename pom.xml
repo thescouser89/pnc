@@ -781,7 +781,7 @@
       <dependency>
         <groupId>com.openshift</groupId>
         <artifactId>openshift-restclient-java</artifactId>
-        <version>5.5.0.Final</version>
+        <version>9.0.1.Final</version>
         <exclusions>
           <exclusion>
             <groupId>log4j</groupId>
