@@ -262,18 +262,19 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
         };
         creatingPod = CompletableFuture.runAsync(createPod, executor);
 
-        if (client == null) logger.error("Client is null at create service!!!!!!!!!!!!!!!");
-        ModelNode serviceConfigurationNode = createModelNode(
-                Configurations.getContentAsString(Resource.PNC_BUILDER_SERVICE, openshiftBuildAgentConfig),
-                environmetVariables);
-        service = new Service(
-                serviceConfigurationNode,
-                client,
-                ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.SERVICE));
-        service.setNamespace(environmentConfiguration.getPncNamespace());
-        logger.info("Service: {}", service);
         Runnable createService = () -> {
             try {
+                if (client == null) logger.error("Client is null at create service!!!!!!!!!!!!!!!");
+                ModelNode serviceConfigurationNode = createModelNode(
+                        Configurations.getContentAsString(Resource.PNC_BUILDER_SERVICE, openshiftBuildAgentConfig),
+                        environmetVariables);
+                service = new Service(
+                        serviceConfigurationNode,
+                        client,
+                        ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.SERVICE));
+                service.setNamespace(environmentConfiguration.getPncNamespace());
+                logger.info("Service: {}", service);
+                logger.info("Service namespace: {}", service.getNamespace());
                 client.create(service, service.getNamespace());
             } catch (Throwable e) {
                 logger.error("Cannot create service.", e);
