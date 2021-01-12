@@ -187,6 +187,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
         client = new ClientBuilder(environmentConfiguration.getRestEndpointUrl())
                 .usingToken(environmentConfiguration.getRestAuthToken())
                 .build();
+        logger.error(">>>> : {}", client.getBaseURL());
 
         if (client == null) logger.error("Client is null at initialization!!!");
 
@@ -240,19 +241,19 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
 
         initDebug();
 
+        ModelNode podConfigurationNode = createModelNode(
+                Configurations.getContentAsString(Resource.PNC_BUILDER_POD, openshiftBuildAgentConfig),
+                environmetVariables);
+        if (client == null) logger.error("Client is null at create pod!!!!!!!!!!!!!!!");
+        pod = new Pod(
+                podConfigurationNode,
+                client,
+                ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.POD));
+        if (pod == null) logger.error("pod is null!!!");
+        pod.setNamespace(environmentConfiguration.getPncNamespace());
+
         Runnable createPod = () -> {
             try {
-                ModelNode podConfigurationNode = createModelNode(
-                        Configurations.getContentAsString(Resource.PNC_BUILDER_POD, openshiftBuildAgentConfig),
-                        environmetVariables);
-                if (client == null) logger.error("Client is null at create pod!!!!!!!!!!!!!!!");
-                pod = new Pod(
-                        podConfigurationNode,
-                        client,
-                        ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.POD));
-                if (pod == null) logger.error("pod is null!!!");
-                pod.setNamespace(environmentConfiguration.getPncNamespace());
-
                 client.create(pod, pod.getNamespace());
             } catch (Throwable e) {
                 logger.error("Cannot create pod.", e);
@@ -282,21 +283,21 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
         creatingService = CompletableFuture.runAsync(createService, executor);
 
         if (createRoute) {
+            ModelNode routeConfigurationNode = createModelNode(
+                    Configurations.getContentAsString(Resource.PNC_BUILDER_ROUTE, openshiftBuildAgentConfig),
+                    environmetVariables);
+            if (client == null) logger.error("Client is null at create route!!!!!!!!!!!!!!!");
+
+            logger.info("Route: {}", route);
+            route = new Route(
+                    routeConfigurationNode,
+                    client,
+                    ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.ROUTE));
+            logger.info("Route: {}", route);
+
+            route.setNamespace(environmentConfiguration.getPncNamespace());
             Runnable createRouteRunnable = () -> {
                 try {
-                    ModelNode routeConfigurationNode = createModelNode(
-                            Configurations.getContentAsString(Resource.PNC_BUILDER_ROUTE, openshiftBuildAgentConfig),
-                            environmetVariables);
-                    if (client == null) logger.error("Client is null at create route!!!!!!!!!!!!!!!");
-
-                    logger.info("Route: {}", route);
-                    route = new Route(
-                            routeConfigurationNode,
-                            client,
-                            ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.ROUTE));
-                    logger.info("Route: {}", route);
-
-                    route.setNamespace(environmentConfiguration.getPncNamespace());
 
                     client.create(route, route.getNamespace());
                 } catch (Throwable e) {
