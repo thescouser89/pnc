@@ -245,7 +245,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                 ModelNode podConfigurationNode = createModelNode(
                         Configurations.getContentAsString(Resource.PNC_BUILDER_POD, openshiftBuildAgentConfig),
                         environmetVariables);
-                if (client == null) logger.error("Client is null!!!!!!!!!!!!!!!");
+                if (client == null) logger.error("Client is null at create pod!!!!!!!!!!!!!!!");
                 pod = new Pod(
                         podConfigurationNode,
                         client,
@@ -261,6 +261,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
         };
         creatingPod = CompletableFuture.runAsync(createPod, executor);
 
+        if (client == null) logger.error("Client is null at create service!!!!!!!!!!!!!!!");
         ModelNode serviceConfigurationNode = createModelNode(
                 Configurations.getContentAsString(Resource.PNC_BUILDER_SERVICE, openshiftBuildAgentConfig),
                 environmetVariables);
@@ -285,6 +286,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                     ModelNode routeConfigurationNode = createModelNode(
                             Configurations.getContentAsString(Resource.PNC_BUILDER_ROUTE, openshiftBuildAgentConfig),
                             environmetVariables);
+                    if (client == null) logger.error("Client is null at create route!!!!!!!!!!!!!!!");
 
                     Route route = new Route(
                             routeConfigurationNode,
@@ -623,6 +625,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
      * @return boolean: is pod running?
      */
     private boolean isPodRunning() {
+        if (client == null) logger.error("Client is null at is pod running!!!!!!!!!!!!!!!");
         pod = client.get(pod.getKind(), pod.getName(), environmentConfiguration.getPncNamespace());
 
         String podStatus = pod.getStatus();
@@ -642,6 +645,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
     }
 
     private boolean isServiceRunning() {
+        if (client == null) logger.error("Client is null at is service running!!!!!!!!!!!!!!!");
         service = client.get(service.getKind(), service.getName(), environmentConfiguration.getPncNamespace());
         boolean isRunning = !service.getPods().isEmpty();
         if (isRunning) {
@@ -654,6 +658,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
     private boolean isRouteRunning() {
         try {
             if (connectToPingUrl(new URL(getPublicEndpointUrl()))) {
+                if (client == null) logger.error("Client is null at is route running!!!!!!!!!!!!!!!");
                 route = client.get(route.getKind(), route.getName(), environmentConfiguration.getPncNamespace());
                 logger.debug("Route {} running.", route.getName());
                 return true;
@@ -727,6 +732,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
      */
     private <T extends IResource> void tryOpenshiftDeleteResource(T resource) {
         try {
+            if (client == null) logger.error("Client is null at delete!!!!!!!!!!!!!!!");
             client.delete(resource);
         } catch (NotFoundException e) {
             logger.warn("Couldn't delete the Openshift resource since it does not exist", e);
