@@ -188,6 +188,8 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                 .usingToken(environmentConfiguration.getRestAuthToken())
                 .build();
 
+        if (client == null) logger.error("Client is null at initialization!!!");
+
         environmetVariables = new HashMap<>();
 
         final String buildAgentHost = environmentConfiguration.getBuildAgentHost();
@@ -243,10 +245,12 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                 ModelNode podConfigurationNode = createModelNode(
                         Configurations.getContentAsString(Resource.PNC_BUILDER_POD, openshiftBuildAgentConfig),
                         environmetVariables);
+                if (client == null) logger.error("Client is null!!!!!!!!!!!!!!!");
                 pod = new Pod(
                         podConfigurationNode,
                         client,
                         ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.POD));
+                if (pod == null) logger.error("pod is null!!!");
                 pod.setNamespace(environmentConfiguration.getPncNamespace());
 
                 client.create(pod, pod.getNamespace());
