@@ -270,6 +270,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                 client,
                 ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.SERVICE));
         service.setNamespace(environmentConfiguration.getPncNamespace());
+        logger.info("Service: {}", service);
         Runnable createService = () -> {
             try {
                 client.create(service, service.getNamespace());
@@ -288,10 +289,12 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                             environmetVariables);
                     if (client == null) logger.error("Client is null at create route!!!!!!!!!!!!!!!");
 
-                    Route route = new Route(
+                    logger.info("Route: {}", route);
+                    route = new Route(
                             routeConfigurationNode,
                             client,
                             ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.ROUTE));
+                    logger.info("Route: {}", route);
 
                     route.setNamespace(environmentConfiguration.getPncNamespace());
 
@@ -351,9 +354,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
         Properties properties = new Properties();
         properties.putAll(runtimeProperties);
         String definition = StringPropertyReplacer.replaceProperties(resourceDefinition, properties);
-        if (logger.isTraceEnabled()) {
-            logger.trace("Node definition: {}", secureLog(definition));
-        }
+       logger.info("Node definition: {}", secureLog(definition));
 
         return ModelNode.fromJSONString(definition);
     }
