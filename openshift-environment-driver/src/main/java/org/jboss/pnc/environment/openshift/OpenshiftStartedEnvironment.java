@@ -239,25 +239,25 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
 
         initDebug();
 
-        ModelNode podConfigurationNode = createModelNode(
-                Configurations.getContentAsString(Resource.PNC_BUILDER_POD, openshiftBuildAgentConfig),
-                environmetVariables);
-        pod = new Pod(
-                podConfigurationNode,
-                client,
-                ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.POD));
-        pod.setNamespace(environmentConfiguration.getPncNamespace());
-        Runnable createPod = () -> {
+        Runnable createPodRunnable = () -> {
             try {
+                ModelNode podConfigurationNode = createModelNode(
+                        Configurations.getContentAsString(Resource.PNC_BUILDER_POD, openshiftBuildAgentConfig),
+                        environmetVariables);
+                pod = new Pod(
+                        podConfigurationNode,
+                        client,
+                        ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.POD));
+                pod.setNamespace(environmentConfiguration.getPncNamespace());
                 client.create(pod, pod.getNamespace());
             } catch (Throwable e) {
                 logger.error("Cannot create pod.", e);
                 throw e;
             }
         };
-        creatingPod = CompletableFuture.runAsync(createPod, executor);
+        creatingPod = CompletableFuture.runAsync(createPodRunnable, executor);
 
-        Runnable createService = () -> {
+        Runnable createServiceRunnable = () -> {
             try {
                 ModelNode serviceConfigurationNode = createModelNode(
                         Configurations.getContentAsString(Resource.PNC_BUILDER_SERVICE, openshiftBuildAgentConfig),
@@ -273,10 +273,10 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                 throw e;
             }
         };
-        creatingService = CompletableFuture.runAsync(createService, executor);
+        creatingService = CompletableFuture.runAsync(createServiceRunnable, executor);
 
         if (createRoute) {
-            Runnable createRoute = () -> {
+            Runnable createRouteRunnable = () -> {
                 try {
                     ModelNode routeConfigurationNode = createModelNode(
                             Configurations.getContentAsString(Resource.PNC_BUILDER_ROUTE, openshiftBuildAgentConfig),
@@ -292,7 +292,7 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                     throw e;
                 }
             };
-            CompletableFuture<Void> creatingRouteFuture = CompletableFuture.runAsync(createRoute, executor);
+            CompletableFuture<Void> creatingRouteFuture = CompletableFuture.runAsync(createRouteRunnable, executor);
             creatingRoute = Optional.of(creatingRouteFuture);
             openshiftDefinitions = CompletableFuture.allOf(creatingPod, creatingService, creatingRouteFuture);
         } else {
