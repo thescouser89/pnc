@@ -257,16 +257,16 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
         };
         creatingPod = CompletableFuture.runAsync(createPod, executor);
 
-        ModelNode serviceConfigurationNode = createModelNode(
-                Configurations.getContentAsString(Resource.PNC_BUILDER_SERVICE, openshiftBuildAgentConfig),
-                environmetVariables);
-        service = new Service(
-                serviceConfigurationNode,
-                client,
-                ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.SERVICE));
-        service.setNamespace(environmentConfiguration.getPncNamespace());
         Runnable createService = () -> {
             try {
+                ModelNode serviceConfigurationNode = createModelNode(
+                        Configurations.getContentAsString(Resource.PNC_BUILDER_SERVICE, openshiftBuildAgentConfig),
+                        environmetVariables);
+                service = new Service(
+                        serviceConfigurationNode,
+                        client,
+                        ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.SERVICE));
+                service.setNamespace(environmentConfiguration.getPncNamespace());
                 client.create(service, service.getNamespace());
             } catch (Throwable e) {
                 logger.error("Cannot create service.", e);
