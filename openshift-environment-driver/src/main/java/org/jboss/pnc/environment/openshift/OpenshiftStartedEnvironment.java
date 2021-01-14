@@ -239,16 +239,16 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
 
         initDebug();
 
-        ModelNode podConfigurationNode = createModelNode(
-                Configurations.getContentAsString(Resource.PNC_BUILDER_POD, openshiftBuildAgentConfig),
-                environmetVariables);
-        pod = new Pod(
-                podConfigurationNode,
-                client,
-                ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.POD));
-        pod.setNamespace(environmentConfiguration.getPncNamespace());
         Runnable createPod = () -> {
             try {
+                ModelNode podConfigurationNode = createModelNode(
+                        Configurations.getContentAsString(Resource.PNC_BUILDER_POD, openshiftBuildAgentConfig),
+                        environmetVariables);
+                pod = new Pod(
+                        podConfigurationNode,
+                        client,
+                        ResourcePropertiesRegistry.getInstance().get(OSE_API_VERSION, ResourceKind.POD));
+                pod.setNamespace(environmentConfiguration.getPncNamespace());
                 client.create(pod, pod.getNamespace());
             } catch (Throwable e) {
                 logger.error("Cannot create pod.", e);
