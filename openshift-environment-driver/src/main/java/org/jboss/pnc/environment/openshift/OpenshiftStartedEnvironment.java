@@ -531,7 +531,6 @@ public class OpenshiftStartedEnvironment implements StartedEnvironment {
                     return null;
                 });
 
-        logger.info("Waiting to initialize environment. Pod [{}]; Service [{}].", pod.getName(), service.getName());
     }
 
     private String getPrettierErrorMessageFromThrowable(Throwable throwable, boolean finishedRetries) {
