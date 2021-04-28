@@ -1,0 +1,91 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "10:00"
+  open-pull-requests-limit: 10
+  target-branch: version-bump
+  ignore:
+  - dependency-name: org.mockito:mockito-core
+    versions:
+    - 3.7.7
+    - 3.8.0
+  - dependency-name: net.revelc.code.formatter:formatter-maven-plugin
+    versions:
+    - 2.13.0
+    - 2.14.0
+  - dependency-name: org.jboss.bom:jboss-eap-jakartaee8
+    versions:
+    - 7.3.5.GA
+  - dependency-name: org.jbpm:jbpm-test
+    versions:
+    - 7.48.0.Final
+    - 7.49.0.Final
+  - dependency-name: org.jboss.weld:weld-core-impl
+    versions:
+    - 4.0.0.Final
+  - dependency-name: org.projectlombok:lombok
+    versions:
+    - 1.18.18
+  - dependency-name: org.keycloak:keycloak-undertow-adapter-spi
+    versions:
+    - 12.0.0
+    - 12.0.2
+  - dependency-name: org.keycloak:keycloak-common
+    versions:
+    - 12.0.0
+    - 12.0.2
+  - dependency-name: org.mapstruct:mapstruct-jdk8
+    versions:
+    - 1.4.1.Final
+    - 1.4.2.Final
+  - dependency-name: org.commonjava.atlas:atlas-npm-identities
+    versions:
+    - 1.1.1
+  - dependency-name: org.commonjava.atlas:atlas-identities
+    versions:
+    - 1.1.1
+  - dependency-name: org.commonjava.indy:indy-test-fixtures-core
+    versions:
+    - 2.5.2
+  - dependency-name: org.commonjava.indy.embed:indy-embedder
+    versions:
+    - 2.5.2
+  - dependency-name: org.commonjava.indy:indy-client-core-java
+    versions:
+    - 2.5.2
+  - dependency-name: org.commonjava.indy:indy-folo-client-java
+    versions:
+    - 2.5.2
+  - dependency-name: org.commonjava.indy:indy-promote-client-java
+    versions:
+    - 2.5.2
+  - dependency-name: org.commonjava.indy:indy-model-core-java
+    versions:
+    - 2.5.2
+  - dependency-name: org.apache.maven.plugins:maven-compiler-plugin
+    versions:
+    - 3.8.1-jboss-2
+  - dependency-name: com.openshift:openshift-restclient-java
+    versions:
+    - 9.0.1.Final
+  - dependency-name: pl.project13.maven:git-commit-id-plugin
+    versions:
+    - 4.0.3
+  - dependency-name: jakarta.xml.bind:jakarta.xml.bind-api
+    versions:
+    - 3.0.0
+  - dependency-name: com.github.eirslett:frontend-maven-plugin
+    versions:
+    - 1.11.0
+  - dependency-name: org.hibernate:hibernate-search-serialization-avro
+    versions:
+    - 5.11.7.Final
+  - dependency-name: org.hibernate:hibernate-search-orm
+    versions:
+    - 5.11.7.Final
+  - dependency-name: org.hibernate:hibernate-search-engine
+    versions:
+    - 5.11.7.Final
