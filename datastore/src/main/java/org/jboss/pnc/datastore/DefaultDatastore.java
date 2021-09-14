@@ -152,10 +152,10 @@ public class DefaultDatastore implements Datastore {
          * (re-downloaded), it must be linked to built artifacts repository.
          */
         logger.debug("Saving built artifacts ...");
-        final Set<Artifact> savedBuiltArtifacts = saveArtifacts(builtArtifacts, repositoriesCache, artifactCache);
+        // final Set<Artifact> savedBuiltArtifacts = saveArtifacts(builtArtifacts, repositoriesCache, artifactCache);
 
         logger.debug("Saving dependencies ...");
-        buildRecord.setDependencies(saveArtifacts(dependencies, repositoriesCache, artifactCache));
+        // buildRecord.setDependencies(saveArtifacts(dependencies, repositoriesCache, artifactCache));
 
         logger.debug("Done saving artifacts.");
         logger.trace("Saving build record {}.", buildRecord);
@@ -163,9 +163,9 @@ public class DefaultDatastore implements Datastore {
         logger.debug("Build record {} saved.", buildRecord.getId());
 
         logger.trace("Setting artifacts as built.");
-        for (Artifact builtArtifact : savedBuiltArtifacts) {
-            builtArtifact.setBuildRecord(buildRecord);
-        }
+//        for (Artifact builtArtifact : savedBuiltArtifacts) {
+//            builtArtifact.setBuildRecord(buildRecord);
+//        }
 
         return buildRecord;
     }
