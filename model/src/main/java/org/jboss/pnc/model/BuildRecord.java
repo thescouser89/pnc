@@ -194,6 +194,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
     private String buildOutputChecksum;
 
     @Enumerated(EnumType.STRING)
+    @Transient
     private BuildStatus status;
 
     @Size(max = 150)
@@ -256,6 +257,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
     @Deprecated
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_buildrecord_buildenvironment"), updatable = false)
+    @Transient
     private BuildEnvironment buildEnvironment;
 
     /**
@@ -265,6 +267,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
      */
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_buildrecord_productMilestone"), updatable = false)
+    @Transient
     private ProductMilestone productMilestone;
 
     /**
