@@ -159,7 +159,7 @@ public class DefaultDatastore implements Datastore {
 
         logger.debug("Done saving artifacts.");
         logger.trace("Saving build record {}.", buildRecord);
-        buildRecord = buildRecordRepository.save(buildRecord);
+        // buildRecord = buildRecordRepository.save(buildRecord);
         logger.debug("Build record {} saved.", buildRecord.getId());
 
         logger.trace("Setting artifacts as built.");
