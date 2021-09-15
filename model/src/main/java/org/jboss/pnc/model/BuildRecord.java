@@ -77,7 +77,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * It stores also the buildDriverID that was used to run the build, the system Image where is was run in, and is mapped
  * to a BuildRecordSet, that encapsulates the set of buildRecord that compose a Product
  */
-@Cacheable
+@Cacheable(false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(
@@ -194,7 +194,6 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
     private String buildOutputChecksum;
 
     @Enumerated(EnumType.STRING)
-    @Transient
     private BuildStatus status;
 
     @Size(max = 150)
@@ -257,7 +256,6 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
     @Deprecated
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_buildrecord_buildenvironment"), updatable = false)
-    @Transient
     private BuildEnvironment buildEnvironment;
 
     /**
@@ -267,7 +265,6 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
      */
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_buildrecord_productMilestone"), updatable = false)
-    @Transient
     private ProductMilestone productMilestone;
 
     /**
