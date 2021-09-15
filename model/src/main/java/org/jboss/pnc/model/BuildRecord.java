@@ -92,9 +92,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
                 @Index(name = "idx_buildrecord_norebuildcause", columnList = "norebuildcause_id") })
 public class BuildRecord implements GenericEntity<Base32LongID> {
 
+    private static final long serialVersionUID = -5472083609387609797L;
 
     public static final String SEQUENCE_NAME = "build_record_id_seq";
-    private static final long serialVersionUID = 3337431404142336619L;
 
     private static Logger logger = LoggerFactory.getLogger(BuildRecord.class);
 
