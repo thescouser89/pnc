@@ -92,9 +92,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
                 @Index(name = "idx_buildrecord_norebuildcause", columnList = "norebuildcause_id") })
 public class BuildRecord implements GenericEntity<Base32LongID> {
 
-    private static final long serialVersionUID = -5472083609387609797L;
 
     public static final String SEQUENCE_NAME = "build_record_id_seq";
+    private static final long serialVersionUID = 3337431404142336619L;
 
     private static Logger logger = LoggerFactory.getLogger(BuildRecord.class);
 
@@ -220,14 +220,14 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
     /**
      * Artifacts which were produced by this build
      */
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "buildRecord")
     private Set<Artifact> builtArtifacts;
 
     /**
      * Artifacts which are required external dependencies of this build
      */
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @ManyToMany
     @JoinTable(
             name = "build_record_artifact_dependencies_map",
@@ -278,7 +278,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
     /**
      * Example attributes POST_BUILD_REPO_VALIDATION: REPO_SYSTEM_ERROR
      */
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "buildRecord", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<BuildRecordAttribute> attributes = new HashSet<>();
 
