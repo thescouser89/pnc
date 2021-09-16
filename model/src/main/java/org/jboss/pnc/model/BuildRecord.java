@@ -78,7 +78,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * to a BuildRecordSet, that encapsulates the set of buildRecord that compose a Product
  */
 @Entity
-@Cacheable(false)
+@Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(
         indexes = { @Index(name = "idx_buildrecord_user", columnList = "user_id"),
@@ -566,6 +566,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
     /**
      * @return The audited version of the build configuration used to create this build record
      */
+    @Transient
     public BuildConfigurationAudited getBuildConfigurationAudited() {
         return buildConfigurationAudited;
     }
@@ -594,6 +595,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
         }
     }
 
+    @Transient
     public IdRev getBuildConfigurationAuditedIdRev() {
         return new IdRev(buildConfigurationId, buildConfigurationRev);
     }
@@ -811,11 +813,13 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
         }
     }
 
+    @Transient
     public Base32LongID[] getDependentBuildRecordIds() {
         Long[] longIds = StringUtils.deserializeLong(dependentBuildRecordIds);
         return Arrays.stream(longIds).map(Base32LongID::new).toArray(Base32LongID[]::new);
     }
 
+    @Transient
     public Base32LongID[] getDependencyBuildRecordIds() {
         Long[] longIds = StringUtils.deserializeLong(dependencyBuildRecordIds);
         return Arrays.stream(longIds).map(Base32LongID::new).toArray(Base32LongID[]::new);

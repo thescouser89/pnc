@@ -160,7 +160,6 @@ public class DefaultDatastore implements Datastore {
         logger.debug("Saving dependencies ...");
         buildRecord.setDependencies(saveArtifacts(dependencies, repositoriesCache, artifactCache));
 
-
         try {
             logger.warn("====================== Starting to serialize");
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
