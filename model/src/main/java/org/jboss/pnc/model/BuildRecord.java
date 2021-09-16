@@ -643,6 +643,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
         return attributes;
     }
 
+    @Transient
     public Map<String, String> getAttributesMap() {
         return attributes.stream()
                 .collect(Collectors.toMap(BuildRecordAttribute::getKey, BuildRecordAttribute::getValue));
@@ -652,6 +653,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
         this.attributes = attributes;
     }
 
+    @Transient
     public String getAttribute(String key) {
         Optional<BuildRecordAttribute> attribute = getAttributeEntity(key);
         if (attribute.isPresent()) {
@@ -661,6 +663,7 @@ public class BuildRecord implements GenericEntity<Base32LongID> {
         }
     }
 
+    @Transient
     public Optional<BuildRecordAttribute> getAttributeEntity(String key) {
         return attributes.stream().filter(a -> a.getKey().equals(key)).findAny();
     }
