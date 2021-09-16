@@ -44,6 +44,9 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Collections;
@@ -152,20 +155,32 @@ public class DefaultDatastore implements Datastore {
          * (re-downloaded), it must be linked to built artifacts repository.
          */
         logger.debug("Saving built artifacts ...");
-        // final Set<Artifact> savedBuiltArtifacts = saveArtifacts(builtArtifacts, repositoriesCache, artifactCache);
+        final Set<Artifact> savedBuiltArtifacts = saveArtifacts(builtArtifacts, repositoriesCache, artifactCache);
 
         logger.debug("Saving dependencies ...");
-        // buildRecord.setDependencies(saveArtifacts(dependencies, repositoriesCache, artifactCache));
+        buildRecord.setDependencies(saveArtifacts(dependencies, repositoriesCache, artifactCache));
 
+
+        try {
+            logger.warn("====================== Starting to serialize");
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(buildRecord);
+            oos.flush();
+            byte[] data = bos.toByteArray();
+            logger.warn("======================= Done to serialize");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         logger.debug("Done saving artifacts.");
         logger.trace("Saving build record {}.", buildRecord);
         buildRecord = buildRecordRepository.save(buildRecord);
         logger.debug("Build record {} saved.", buildRecord.getId());
 
         logger.trace("Setting artifacts as built.");
-//        for (Artifact builtArtifact : savedBuiltArtifacts) {
-//            builtArtifact.setBuildRecord(buildRecord);
-//        }
+        for (Artifact builtArtifact : savedBuiltArtifacts) {
+            builtArtifact.setBuildRecord(buildRecord);
+        }
 
         return buildRecord;
     }

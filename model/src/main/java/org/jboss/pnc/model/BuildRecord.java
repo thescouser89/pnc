@@ -78,6 +78,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * to a BuildRecordSet, that encapsulates the set of buildRecord that compose a Product
  */
 @Entity
+@Cacheable(false)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(
         indexes = { @Index(name = "idx_buildrecord_user", columnList = "user_id"),
                 @Index(name = "idx_buildrecord_buildenvironment", columnList = "buildenvironment_id"),
