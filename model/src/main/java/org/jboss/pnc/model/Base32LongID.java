@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -85,5 +86,26 @@ public class Base32LongID implements Serializable {
     @Override
     public String toString() {
         return getId();
+    }
+
+    /**
+     * Overrides default Serializable writeObject
+     *
+     * @param stream
+     * @throws IOException
+     */
+    private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
+        stream.writeLong(longId);
+    }
+
+    /**
+     * Overrides default Serializable readObject
+     *
+     * @param stream
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        setLongId(stream.readLong());
     }
 }
