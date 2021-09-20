@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import org.jboss.pnc.common.pnc.LongBase32IdConverter;
 
@@ -30,29 +31,40 @@ public class Base32LongID implements Serializable {
     private static final long serialVersionUID = -3000291820607237160L;
 
     @Column(name = "id", nullable = false, updatable = false)
-    private long id;
+    private long longId;
+
+    @Transient
+    private String id;
 
     private Base32LongID() {
     }
 
     public Base32LongID(String id) {
-        this.id = LongBase32IdConverter.toLong(Objects.requireNonNull(id));
+        this.id = id;
+        this.longId = LongBase32IdConverter.toLong(Objects.requireNonNull(id));
     }
 
-    public Base32LongID(long id) {
-        this.id = id;
+    public Base32LongID(long longId) {
+        this.longId = longId;
+        this.id = LongBase32IdConverter.toString(longId);
     }
 
     public String getId() {
-        return LongBase32IdConverter.toString(id);
+        return LongBase32IdConverter.toString(longId);
     }
 
     public void setId(String id) {
-        this.id = LongBase32IdConverter.toLong(Objects.requireNonNull(id));
+        this.id = id;
+        this.longId = LongBase32IdConverter.toLong(Objects.requireNonNull(id));
     }
 
     public long getLongId() {
-        return id;
+        return longId;
+    }
+
+    public void setLongId(long longId) {
+        this.longId = longId;
+        this.id = LongBase32IdConverter.toString(longId);
     }
 
     @Override
