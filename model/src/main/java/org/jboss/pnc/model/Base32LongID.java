@@ -106,6 +106,7 @@ public class Base32LongID implements Serializable {
      * @throws ClassNotFoundException
      */
     private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
-        setLongId(stream.readLong());
+        this.longId = stream.readLong();
+        this.id = LongBase32IdConverter.toString(this.longId);
     }
 }
