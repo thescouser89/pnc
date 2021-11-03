@@ -429,12 +429,19 @@ public class DefaultBuildCoordinator implements BuildCoordinator {
             log.debug("Cancelling task {}.", taskOptional.get());
             try {
                 boolean cancelSubmitted = buildScheduler.cancel(taskOptional.get());
+                log.info("cancelSubmitted is: {}", cancelSubmitted);
                 if (cancelSubmitted) {
+                    log.info("In monitorCancellation");
                     monitorCancellation(taskOptional.get());
                 } else {
+                    log.info("In first cancelInternal");
                     cancelInternal(taskOptional.get());
                 }
             } catch (CoreException e) {
+                log.info("------------------------");
+                e.printStackTrace();
+                log.info("------------------------");
+                log.info("In second cancelInternal");
                 cancelInternal(taskOptional.get());
             }
             return true;
