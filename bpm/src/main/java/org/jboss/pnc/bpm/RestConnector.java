@@ -43,13 +43,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Matej Lazar
@@ -193,6 +196,12 @@ public class RestConnector implements Connector {
         configureRequest(accessToken, request);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             int statusCode = response.getStatusLine().getStatusCode();
+            String result = new BufferedReader(new InputStreamReader(response.getEntity().getContent())).lines()
+                    .collect(Collectors.joining("\n"));
+            log.info("---------- from rest connector ----------");
+            log.info(result);
+            log.info("xxxxxxxxxxx from rest connector ----------");
+
             if (statusCode == 200) {
                 log.info("Cancelled process instance id: {}", processInstance.getId());
                 return true;
