@@ -49,6 +49,9 @@ public class UserTest {
 
         user = new User("1234", "<blink>hello</blink>");
         constraintViolations = validator.validate(user);
+        for (ConstraintViolation constraintViolation : constraintViolations) {
+            System.out.println(constraintViolation.getMessage());
+        }
         assertEquals(1, constraintViolations.size());
 
         user = new User("<script>hi</script>", "<blink>hello</blink>");
