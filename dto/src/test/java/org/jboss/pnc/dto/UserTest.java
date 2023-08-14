@@ -49,10 +49,12 @@ public class UserTest {
 
         user = new User("1234", "<blink>hello</blink>");
         constraintViolations = validator.validate(user);
+        StringBuilder stringBuilder = new StringBuilder();
         for (ConstraintViolation constraintViolation : constraintViolations) {
-            System.out.println(constraintViolation.getMessage());
+            stringBuilder.append(constraintViolation.getMessage());
+            stringBuilder.append("\n");
         }
-        assertEquals(1, constraintViolations.size());
+        assertEquals(stringBuilder.toString(), 1, constraintViolations.size());
 
         user = new User("<script>hi</script>", "<blink>hello</blink>");
         constraintViolations = validator.validate(user);
