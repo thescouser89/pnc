@@ -748,27 +748,27 @@ public class DeliverableAnalyzerManagerImpl implements org.jboss.pnc.facade.Deli
         DeliverableAnalysisStatusChangedEvent analysisStatusChanged = DefaultDeliverableAnalysisStatusChangedEvent
                 .started(id, milestoneId, deliverablesUrls);
         analysisStatusChangedEventNotifier.fire(analysisStatusChanged);
-//        try {
-//
-//            AnalyzeDeliverablesBpmRequest bpmRequest = new AnalyzeDeliverablesBpmRequest(
-//                    id,
-//                    deliverablesUrls,
-//                    runAsScratchAnalysis);
-//            AnalyzeDeliverablesTask analyzeTask = new AnalyzeDeliverablesTask(bpmRequest, callback);
-//
-//            connector.startProcess(
-//                    bpmConfig.getAnalyzeDeliverablesBpmProcessId(),
-//                    analyzeTask,
-//                    id,
-//                    keycloakServiceClient.getAuthToken());
-//
-//            DeliverableAnalysisStatusChangedEvent analysisStatusChanged = DefaultDeliverableAnalysisStatusChangedEvent
-//                    .started(id, milestoneId, deliverablesUrls);
-//            analysisStatusChangedEventNotifier.fire(analysisStatusChanged);
-//        } catch (ProcessManagerException e) {
-//            log.error("Error trying to start analysis of deliverables task for milestone: {}", milestoneId, e);
-//            throw new RuntimeException(e);
-//        }
+        // try {
+        //
+        // AnalyzeDeliverablesBpmRequest bpmRequest = new AnalyzeDeliverablesBpmRequest(
+        // id,
+        // deliverablesUrls,
+        // runAsScratchAnalysis);
+        // AnalyzeDeliverablesTask analyzeTask = new AnalyzeDeliverablesTask(bpmRequest, callback);
+        //
+        // connector.startProcess(
+        // bpmConfig.getAnalyzeDeliverablesBpmProcessId(),
+        // analyzeTask,
+        // id,
+        // keycloakServiceClient.getAuthToken());
+        //
+        // DeliverableAnalysisStatusChangedEvent analysisStatusChanged = DefaultDeliverableAnalysisStatusChangedEvent
+        // .started(id, milestoneId, deliverablesUrls);
+        // analysisStatusChangedEventNotifier.fire(analysisStatusChanged);
+        // } catch (ProcessManagerException e) {
+        // log.error("Error trying to start analysis of deliverables task for milestone: {}", milestoneId, e);
+        // throw new RuntimeException(e);
+        // }
     }
 
     public void observeEvent(@Observes OperationChangedEvent event) {
