@@ -171,6 +171,7 @@ public class BrewPusherImpl implements BrewPusher {
         try {
 
             MDCUtils.addProcessContext(operation.getId().getId());
+            log.info("Adding key: {} with value: {} to MDC", BUILD_ID_KEY, operation.getId().getId());
             MDCUtils.addCustomContext(BUILD_ID_KEY, operation.getBuild().getId().getId());
 
             dingroguClient.submitBuildPush(

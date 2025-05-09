@@ -39,6 +39,9 @@ import org.jboss.pnc.model.utils.ContentIdentityManager;
 import org.jboss.pnc.spi.coordinator.RemoteBuildTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import static org.jboss.pnc.api.constants.MDCKeys.BUILD_ID_KEY;
 
 @ApplicationScoped
 public class DingroguClientImpl implements DingroguClient {
@@ -76,6 +79,7 @@ public class DingroguClientImpl implements DingroguClient {
 
     @Override
     public void submitBuildPush(DingroguBuildPushDTO dto) {
+        log.info("In Dingrogu: MDC Key: {} with value: {}", BUILD_ID_KEY, MDC.get(BUILD_ID_KEY));
         String url = global.getExternalDingroguUrl() + "/workflow/brew-push/start";
         submitRequestWithRetries(
                 Request.builder().method(Request.Method.POST).uri(URI.create(url)).build(),
@@ -189,11 +193,10 @@ public class DingroguClientImpl implements DingroguClient {
         try {
 
             // Add MDC values, always
-            List<Request.Header> headers = MDCUtils.getHeadersFromMDC()
-                    .entrySet()
-                    .stream()
-                    .map(entry -> new Request.Header(entry.getKey(), entry.getValue()))
-                    .collect(Collectors.toList());
+            List<Request.Header> headers = MDCUtils.getHeadersFromMDC().entrySet().stream().map(entry -> {
+                log.info("Adding MDC header: {} = {}", entry.getKey(), entry.getValue());
+                return new Request.Header(entry.getKey(), entry.getValue());
+            }).collect(Collectors.toList());
 
             request.getHeaders().addAll(headers);
 
