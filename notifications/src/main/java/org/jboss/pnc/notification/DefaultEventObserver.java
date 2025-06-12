@@ -94,7 +94,7 @@ public class DefaultEventObserver {
     }
 
     public void collectOperationChangedEvent(@ObservesAsync OperationChangedEvent operationChangedEvent) {
-        logger.trace("Observed new OperationChangedEvent event {}.", operationChangedEvent);
+        logger.info("Observed new OperationChangedEvent event {}.", operationChangedEvent);
         String notificationType;
         Operation operationToSend;
         if (operationChangedEvent.getOperationClass() == DeliverableAnalyzerOperation.class) {
@@ -111,8 +111,13 @@ public class DefaultEventObserver {
             buildPushOperation.setProgressStatus(operationChangedEvent.getStatus());
             buildPushOperation.setResult(operationChangedEvent.getResult());
             operationToSend = buildPushOperationMapper.toDTO(buildPushOperation);
+            logger.info(">>>>>>>>>> progress status {}", buildPushOperation.getProgressStatus());
+            logger.info(">>>>>>>>>> result {}", buildPushOperation.getResult());
+
+            // needed in websocket cli
             if (buildPushOperation.getProgressStatus() == ProgressStatus.FINISHED) { // TODO: Remove in next version
                 BuildPushReport buildPushReport = buildPushReportRepository.queryById(buildPushOperation.getId());
+                logger.info(">>>>>>>>>> buildpushreport {}", buildPushReport);
                 sendMessage(new BuildPushResultNotification(buildPushReportMapper.toDTO(buildPushReport)));
             }
         } else {
@@ -128,7 +133,7 @@ public class DefaultEventObserver {
                         operationChangedEvent.getPreviousStatus(),
                         operationChangedEvent.getResult(),
                         operationToSend));
-        logger.trace("OperationChangedEvent event processed {}.", operationChangedEvent);
+        logger.info("OperationChangedEvent event processed {}.", operationChangedEvent);
     }
 
 }
