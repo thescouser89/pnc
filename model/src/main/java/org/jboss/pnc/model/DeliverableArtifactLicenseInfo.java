@@ -29,6 +29,7 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.jboss.pnc.api.enums.LicenseSource;
 
@@ -115,6 +116,7 @@ public class DeliverableArtifactLicenseInfo implements GenericEntity<Base32LongI
                     referencedColumnName = "distribution_id",
                     foreignKey = @ForeignKey(name = "fk_delartifact"),
                     nullable = false) })
+    @BatchSize(size = 50) // added to avoid the N+1 problem when loading licenses
     private DeliverableArtifact artifact;
 
 }
