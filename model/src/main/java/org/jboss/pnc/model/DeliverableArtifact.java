@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -66,7 +67,7 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
     private DeliverableAnalyzerReport report;
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_deliverableartifact_artifact"))
     @BatchSize(size = 50)
     private Artifact artifact;
