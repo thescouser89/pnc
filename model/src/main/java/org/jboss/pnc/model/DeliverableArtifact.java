@@ -67,7 +67,7 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
     private DeliverableAnalyzerReport report;
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_deliverableartifact_artifact"))
     @BatchSize(size = 50)
     private Artifact artifact;
