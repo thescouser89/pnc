@@ -31,6 +31,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
@@ -67,7 +68,7 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
     @Id
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_deliverableartifact_artifact"))
-    @Fetch(FetchMode.JOIN)
+    @BatchSize(size = 50)
     private Artifact artifact;
 
     /**
@@ -101,7 +102,7 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
      * The set of licenses identified for this deliverable artifact.
      */
     @OneToMany(mappedBy = "artifact", cascade = CascadeType.PERSIST)
-    @Fetch(FetchMode.JOIN)
+    @BatchSize(size = 50)
     private Set<DeliverableArtifactLicenseInfo> licenses;
 
     public DeliverableArtifactPK getId() {
