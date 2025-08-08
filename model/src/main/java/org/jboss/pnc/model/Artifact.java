@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.model;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
@@ -156,6 +157,7 @@ public class Artifact implements GenericEntity<Integer> {
      */
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_artifact_buildrecord"))
+    @BatchSize(size = 50)
     private BuildRecord buildRecord;
 
     /**
