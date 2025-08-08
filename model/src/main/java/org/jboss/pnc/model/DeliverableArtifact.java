@@ -67,9 +67,10 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
     private DeliverableAnalyzerReport report;
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    // @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_deliverableartifact_artifact"))
-    @BatchSize(size = 50)
+    // @BatchSize(size = 50)
     private Artifact artifact;
 
     /**
@@ -103,7 +104,7 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
      * The set of licenses identified for this deliverable artifact.
      */
     @OneToMany(mappedBy = "artifact", cascade = CascadeType.PERSIST)
-    @BatchSize(size = 50)
+    // @BatchSize(size = 50)
     private Set<DeliverableArtifactLicenseInfo> licenses;
 
     public DeliverableArtifactPK getId() {
