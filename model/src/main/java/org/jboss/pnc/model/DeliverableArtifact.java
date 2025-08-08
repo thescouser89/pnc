@@ -100,7 +100,7 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
      * The set of licenses identified for this deliverable artifact.
      */
     @OneToMany(mappedBy = "artifact", cascade = CascadeType.PERSIST)
-    @Fetch(FetchMode.SUBSELECT)
+    // @Fetch(FetchMode.SUBSELECT)
     private Set<DeliverableArtifactLicenseInfo> licenses;
 
     public DeliverableArtifactPK getId() {
