@@ -46,7 +46,6 @@ import javax.ejb.Stateless;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
@@ -579,12 +578,5 @@ public class DeliverableArtifactRepositoryImpl extends AbstractRepository<Delive
         query.groupBy(deliverableArtifactsMilestone.get(ProductMilestone_.id), repositoryType);
 
         return entityManager.createQuery(query).getResultList();
-    }
-
-    @Override
-    protected void joinFetch(Root<DeliverableArtifact> root) {
-        Fetch<DeliverableArtifact, Artifact> artifactFetch = root.fetch(DeliverableArtifact_.artifact);
-        artifactFetch.fetch(Artifact_.buildRecord);
-        root.fetch(DeliverableArtifact_.licenses);
     }
 }

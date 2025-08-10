@@ -156,8 +156,9 @@ public class Artifact implements GenericEntity<Integer> {
     /**
      * The record of the build which produced this artifact.
      */
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_artifact_buildrecord"))
+    @BatchSize(size = 50)
     private BuildRecord buildRecord;
 
     /**
