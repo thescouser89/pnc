@@ -48,6 +48,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import java.util.Collections;
@@ -583,8 +584,8 @@ public class DeliverableArtifactRepositoryImpl extends AbstractRepository<Delive
 
     @Override
     protected void joinFetch(Root<DeliverableArtifact> root) {
-        Fetch<DeliverableArtifact, Artifact> artifactFetch = root.fetch(DeliverableArtifact_.artifact);
-        artifactFetch.fetch(Artifact_.buildRecord);
-        root.fetch(DeliverableArtifact_.licenses);
+        Fetch<DeliverableArtifact, Artifact> artifactFetch = root.fetch(DeliverableArtifact_.artifact, JoinType.LEFT);
+        artifactFetch.fetch(Artifact_.buildRecord, JoinType.LEFT);
+        root.fetch(DeliverableArtifact_.licenses, JoinType.LEFT);
     }
 }
