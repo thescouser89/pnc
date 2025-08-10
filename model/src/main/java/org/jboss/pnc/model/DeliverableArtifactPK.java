@@ -37,15 +37,15 @@ public class DeliverableArtifactPK implements Serializable {
     /**
      * The id of the report.
      */
-    private DeliverableAnalyzerReport report;
+    private long reportId;
 
     /**
      * The id of the artifact.
      */
-    private Artifact artifact;
+    private long artifactId;
 
     /**
      * The id of distribution
      */
-    private DeliverableAnalyzerDistribution distribution;
+    private long distributionId;
 }
