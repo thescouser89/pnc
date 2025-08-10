@@ -68,7 +68,10 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_deliverableartifact_artifact"), insertable = false, updatable = false)
+    @JoinColumn(
+            foreignKey = @ForeignKey(name = "fk_deliverableartifact_artifact"),
+            insertable = false,
+            updatable = false)
     @BatchSize(size = 50)
     private Artifact artifact;
 
@@ -107,12 +110,15 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
     private Set<DeliverableArtifactLicenseInfo> licenses;
 
     public DeliverableArtifactPK getId() {
-        return new DeliverableArtifactPK(report, artifact, distribution);
+        return new DeliverableArtifactPK(
+                report.getId().getLongId(),
+                artifact.getId(),
+                distribution.getId().getLongId());
     }
 
     public void setId(DeliverableArtifactPK id) {
-        report = id.getReport();
-        artifact = id.getArtifact();
+        // report = id.getReport();
+        // artifact = id.getArtifact();
     }
 
     public void addDeliverableArtifactLicenseInfo(DeliverableArtifactLicenseInfo licenseInfo) {
