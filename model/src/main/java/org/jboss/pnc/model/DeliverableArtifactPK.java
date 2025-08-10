@@ -42,7 +42,7 @@ public class DeliverableArtifactPK implements Serializable {
     /**
      * The id of the artifact.
      */
-    private Artifact artifact;
+    private Long artifactId;
 
     /**
      * The id of distribution

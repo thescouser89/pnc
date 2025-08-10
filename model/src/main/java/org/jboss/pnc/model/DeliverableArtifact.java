@@ -23,7 +23,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -64,8 +66,16 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
     private DeliverableAnalyzerReport report;
 
     @Id
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_deliverableartifact_artifact"))
+    @Column(name = "artifact_id")
+    private Long artifactId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "artifact_id",
+            foreignKey = @ForeignKey(name = "fk_deliverableartifact_artifact"),
+            insertable = false,
+            updatable = false)
+    @BatchSize(size = 50)
     private Artifact artifact;
 
     /**
@@ -103,12 +113,12 @@ public class DeliverableArtifact implements GenericEntity<DeliverableArtifactPK>
     private Set<DeliverableArtifactLicenseInfo> licenses;
 
     public DeliverableArtifactPK getId() {
-        return new DeliverableArtifactPK(report, artifact, distribution);
+        return new DeliverableArtifactPK(report, artifactId, distribution);
     }
 
     public void setId(DeliverableArtifactPK id) {
         report = id.getReport();
-        artifact = id.getArtifact();
+        artifactId = id.getArtifactId();
     }
 
     public void addDeliverableArtifactLicenseInfo(DeliverableArtifactLicenseInfo licenseInfo) {
