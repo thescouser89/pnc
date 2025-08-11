@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.facade.providers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.pnc.api.deliverablesanalyzer.dto.LicenseInfo;
 import org.jboss.pnc.common.util.StringUtils;
 import org.jboss.pnc.dto.requests.labels.DeliverableAnalyzerReportLabelRequest;
@@ -56,6 +57,7 @@ import java.util.stream.Collectors;
 
 import static org.jboss.pnc.spi.datastore.predicates.DeliverableAnalyzerLabelEntryPredicates.withReportId;
 
+@Slf4j
 @PermitAll
 @Stateless
 public class DeliverableAnalyzerReportProviderImpl extends
@@ -110,12 +112,15 @@ public class DeliverableAnalyzerReportProviderImpl extends
         PageInfo pageInfo = pageInfoProducer.getPageInfo(pageIndex, pageSize);
         SortInfo<DeliverableArtifact> sortInfo = rsqlPredicateProducer.getSortInfo(DeliverableArtifact.class, sort);
 
-        List<AnalyzedArtifact> analyzedArtifacts = deliverableArtifactRepository
+        List<DeliverableArtifact> test =  deliverableArtifactRepository
                 .queryWithPredicates(
                         pageInfo,
                         sortInfo,
                         rsqlPredicate,
-                        DeliverableArtifactPredicates.withReportId(entityId))
+                        DeliverableArtifactPredicates.withReportId(entityId));
+
+        log.info("===== DeliverableArtifact loaded");
+        List<AnalyzedArtifact> analyzedArtifacts = test
                 .stream()
                 .map(this::deliverableArtifactToDto)
                 .collect(Collectors.toList());
