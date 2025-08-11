@@ -112,16 +112,14 @@ public class DeliverableAnalyzerReportProviderImpl extends
         PageInfo pageInfo = pageInfoProducer.getPageInfo(pageIndex, pageSize);
         SortInfo<DeliverableArtifact> sortInfo = rsqlPredicateProducer.getSortInfo(DeliverableArtifact.class, sort);
 
-        List<DeliverableArtifact> test =  deliverableArtifactRepository
-                .queryWithPredicates(
-                        pageInfo,
-                        sortInfo,
-                        rsqlPredicate,
-                        DeliverableArtifactPredicates.withReportId(entityId));
+        List<DeliverableArtifact> test = deliverableArtifactRepository.queryWithPredicates(
+                pageInfo,
+                sortInfo,
+                rsqlPredicate,
+                DeliverableArtifactPredicates.withReportId(entityId));
 
         log.info("===== DeliverableArtifact loaded");
-        List<AnalyzedArtifact> analyzedArtifacts = test
-                .stream()
+        List<AnalyzedArtifact> analyzedArtifacts = test.stream()
                 .map(this::deliverableArtifactToDto)
                 .collect(Collectors.toList());
 
