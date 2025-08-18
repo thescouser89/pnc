@@ -22,6 +22,7 @@ import org.commonjava.indy.client.core.IndyClientException;
 import org.commonjava.indy.client.core.module.IndyStoresClientModule;
 import org.commonjava.indy.folo.client.IndyFoloAdminClientModule;
 import org.commonjava.indy.folo.dto.TrackedContentDTO;
+import org.commonjava.indy.folo.dto.TrackedContentEntryDTO;
 import org.commonjava.indy.model.core.BatchDeleteRequest;
 import org.commonjava.indy.model.core.Group;
 import org.commonjava.indy.model.core.StoreKey;
@@ -55,6 +56,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Set;
 
 import static org.commonjava.indy.pkg.PackageTypeConstants.PKG_TYPE_GENERIC_HTTP;
 import static org.commonjava.indy.pkg.PackageTypeConstants.PKG_TYPE_MAVEN;
@@ -168,7 +170,27 @@ public class DefaultRemoteBuildsCleaner implements RemoteBuildsCleaner {
 
                     TrackedContentDTO trackedContentDTO = indy.module(IndyFoloAdminClientModule.class)
                             .getTrackingReport(buildContentId);
+
+
                     if (trackedContentDTO != null) {
+                        logger.info("Tracked Content DTO: {}", trackedContentDTO);
+                        Set<TrackedContentEntryDTO> entryDownloads = trackedContentDTO.getDownloads();
+                        Set<TrackedContentEntryDTO> entryUploads = trackedContentDTO.getUploads();
+
+                        if (entryDownloads != null) {
+                            log.info("Download content");
+                            for (TrackedContentEntryDTO entryDownload : entryDownloads) {
+                                logger.info("Download entry: {}", entryDownload);
+                            }
+                        }
+
+                        if (entryUploads != null) {
+                            log.info("Upload content");
+                            for (TrackedContentEntryDTO entryUpload : entryUploads) {
+                                logger.info("Upload entry: {}", entryUpload);
+                            }
+                        }
+                        logger.info("Deletion request now");
                         // if the tracking report for the tracking id exists, delete the files from the store
                         indy.module(IndyFoloAdminClientModule.class).deleteFilesFromStoreByTrackingID(request);
                     } else {
