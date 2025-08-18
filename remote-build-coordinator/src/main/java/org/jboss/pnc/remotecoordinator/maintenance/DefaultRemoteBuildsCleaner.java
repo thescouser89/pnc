@@ -171,21 +171,20 @@ public class DefaultRemoteBuildsCleaner implements RemoteBuildsCleaner {
                     TrackedContentDTO trackedContentDTO = indy.module(IndyFoloAdminClientModule.class)
                             .getTrackingReport(buildContentId);
 
-
                     if (trackedContentDTO != null) {
                         logger.info("Tracked Content DTO: {}", trackedContentDTO);
                         Set<TrackedContentEntryDTO> entryDownloads = trackedContentDTO.getDownloads();
                         Set<TrackedContentEntryDTO> entryUploads = trackedContentDTO.getUploads();
 
                         if (entryDownloads != null) {
-                            log.info("Download content");
+                            logger.info("Download content");
                             for (TrackedContentEntryDTO entryDownload : entryDownloads) {
                                 logger.info("Download entry: {}", entryDownload);
                             }
                         }
 
                         if (entryUploads != null) {
-                            log.info("Upload content");
+                            logger.info("Upload content");
                             for (TrackedContentEntryDTO entryUpload : entryUploads) {
                                 logger.info("Upload entry: {}", entryUpload);
                             }
