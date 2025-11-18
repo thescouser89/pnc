@@ -1908,6 +1908,40 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+        <!-- we should only use that profile when running in
+            Jenkins CI where the minimum JDK is 17 and we need
+            to build for JDK 11
+        -->
+        <id>ci-jdk11</id>
+        <activation>
+            <property>
+                <name>ci-jdk11</name>
+            </property>
+        </activation>
+        <build>
+          <plugins>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                  <execution>
+                    <goals>
+                      <goal>toolchain</goal>
+                    </goals>
+                    <configuration>
+                      <toolchains>
+                        <jdk>
+                          <version>11</version>
+                        </jdk>
+                      </toolchains>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
+          </plugins>
+        </build>
+    </profile>
   </profiles>
-
 </project>
