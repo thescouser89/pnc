@@ -253,6 +253,7 @@
                 </goals>
                 <configuration>
                   <jbossHome>${test.server.build.dir}</jbossHome>
+                  <javaHome>/usr/lib/jvm/java-11-openjdk</javaHome>
                   <java-opts>
                     <java-opt>--add-modules=java.se</java-opt>
                   </java-opts>
