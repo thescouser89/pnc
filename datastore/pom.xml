@@ -256,6 +256,7 @@
                   <javaHome>/usr/lib/jvm/java-11-openjdk</javaHome>
                   <java-opts>
                       <java-opt>--add-opens=java.base/java.security=ALL-UNNAMED</java-opt>
+                       <java-opt>--add-modules=java.se</java-opt>
                   </java-opts>
                 </configuration>
               </execution>
