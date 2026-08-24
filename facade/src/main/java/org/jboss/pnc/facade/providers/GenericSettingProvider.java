@@ -27,7 +27,7 @@ import org.jboss.pnc.spi.notifications.Notifier;
 import org.jboss.util.Strings;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJBAccessException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.time.Instant;
@@ -56,8 +56,8 @@ public class GenericSettingProvider {
     public GenericSettingProvider() {
     }
 
-    @RolesAllowed(USERS_ADMIN)
     public void activateMaintenanceMode() {
+        requireAdmin();
 
         log.info("Activating Maintenance mode");
         GenericSetting maintenanceMode = createGenericParameterIfNotFound(MAINTENANCE_MODE);
@@ -66,8 +66,8 @@ public class GenericSettingProvider {
         genericSettingRepository.save(maintenanceMode);
     }
 
-    @RolesAllowed(USERS_ADMIN)
     public void deactivateMaintenanceMode() {
+        requireAdmin();
 
         log.info("Deactivating Maintenance mode");
         GenericSetting maintenanceMode = genericSettingRepository.queryByKey(MAINTENANCE_MODE);
@@ -103,8 +103,8 @@ public class GenericSettingProvider {
         return !isInMaintenanceMode();
     }
 
-    @RolesAllowed(USERS_ADMIN)
     public void setPNCVersion(String version) {
+        requireAdmin();
 
         log.info("PNC System version set to: '{}'", version);
         GenericSetting pncVersion = createGenericParameterIfNotFound(PNC_VERSION);
@@ -123,8 +123,8 @@ public class GenericSettingProvider {
         }
     }
 
-    @RolesAllowed(USERS_ADMIN)
     public void setAnnouncementBanner(String banner) {
+        requireAdmin();
 
         log.info("Announcement banner set to: '{}'", banner);
         GenericSetting announcementBanner = createGenericParameterIfNotFound(ANNOUNCEMENT_BANNER);
@@ -143,8 +143,8 @@ public class GenericSettingProvider {
         }
     }
 
-    @RolesAllowed(USERS_ADMIN)
     public void clearAnnouncementBanner() {
+        requireAdmin();
         clearByKey(ANNOUNCEMENT_BANNER);
     }
 
@@ -159,21 +159,34 @@ public class GenericSettingProvider {
                 .build();
     }
 
-    @RolesAllowed(USERS_ADMIN)
     public void setEta(String eta) {
+        requireAdmin();
         log.info("ETA set to: '{}'", eta);
         GenericSetting pncEta = createGenericParameterIfNotFound(ANNOUNCEMENT_ETA);
         pncEta.setValue(eta);
         genericSettingRepository.save(pncEta);
     }
 
-    @RolesAllowed(USERS_ADMIN)
     public void clearEta() {
+        requireAdmin();
         clearByKey(ANNOUNCEMENT_ETA);
     }
 
     public void notifyListeners() {
         notifier.sendMessage(GenericSettingNotification.pncStatusChanged(getPncStatus()));
+    }
+
+    /**
+     * Authorize the operation at the application level by reading the role from the logged-in user (OIDC token claims
+     * or LDAP-derived roles) rather than relying on the EJB container's {@code @RolesAllowed}. The container identity
+     * does not carry the roles for all SSO providers (e.g. when roles are delivered in the token's "groups" claim),
+     * whereas {@link UserService#hasLoggedInUserRole} resolves them consistently across auth methods.
+     */
+    private void requireAdmin() {
+        if (!userService.hasLoggedInUserRole(USERS_ADMIN)) {
+            throw new EJBAccessException(
+                    "Only users with the " + USERS_ADMIN + " role are allowed to perform this operation");
+        }
     }
 
     private GenericSetting createGenericParameterIfNotFound(String key) {
