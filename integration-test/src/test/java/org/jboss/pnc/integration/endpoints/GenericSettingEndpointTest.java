@@ -31,11 +31,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -65,8 +62,6 @@ public class GenericSettingEndpointTest {
         assertThat(errorResponse.getErrorMessage()).isEqualTo(
                 "Insufficient privileges: the required role to access the resource is missing in the provided JWT.");
         String details = (String) errorResponse.getDetails();
-        assertTrue(
-                Stream.of("Invocation on method", "GenericSettingProvider.setAnnouncementBanner", "is not allowed")
-                        .allMatch(details::contains));
+        assertThat(details).isEqualTo("Only users with the pnc-users-admin role are allowed to perform this operation");
     }
 }
